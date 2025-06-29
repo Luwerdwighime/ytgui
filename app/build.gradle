@@ -3,6 +3,7 @@ plugins {
 }
 android {
   compileSdk 34
+  namespace 'org.nazarik.ytgui'
   defaultConfig {
     applicationId "org.nazarik.ytgui"
     minSdk 24
@@ -10,6 +11,14 @@ android {
     versionCode 1
     versionName "1.0"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  signingConfigs {
+    release {
+      storeFile file('keystore.jks')
+      storePassword 'ytgui123'
+      keyAlias 'ytgui'
+      keyPassword 'ytgui123'
+    }
   }
   buildTypes {
     release {
@@ -21,15 +30,6 @@ android {
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_17
     targetCompatibility JavaVersion.VERSION_17
-  }
-  namespace 'org.nazarik.ytgui'
-  signingConfigs {
-    release {
-      storeFile file('keystore.jks')
-      storePassword 'ytgui123'
-      keyAlias 'ytgui'
-      keyPassword 'ytgui123'
-    }
   }
 }
 dependencies {
