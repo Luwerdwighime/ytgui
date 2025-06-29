@@ -1,4 +1,7 @@
 <resources>
   <string name="app_name">Ytgui</string>
+  <string name="next_button">Дальше</string>
+  <string name="url_hint">Введите URL видео</string>
+  <string name="paste_button">Вставить из буфера</string>
+  <string name="download_button">Скачать видео</string>
 </resources>
-
