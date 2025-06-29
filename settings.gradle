@@ -1,18 +1,16 @@
 pluginManagement {
   repositories {
+    gradlePluginPortal()
     google()
     mavenCentral()
-    gradlePluginPortal()
   }
 }
-
 dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
   }
 }
-
-rootProject.name = "ytgui"
+rootProject.name = 'ytgui'
 include ':app'
 
