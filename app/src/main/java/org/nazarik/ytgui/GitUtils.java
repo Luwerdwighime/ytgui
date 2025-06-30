@@ -53,7 +53,8 @@ public class GitUtils {
     for (String file : files) {
       String assetPath = assetDir + "/" + file;
       String outPath = outputDir + "/" + file;
-      if (context.getAssets().list(assetPath) != null) {
+      String[] subFiles = context.getAssets().list(assetPath);
+      if (subFiles != null && subFiles.length > 0) {
         // Рекурсивно копируем подпапку
         copyFolder(context, assetPath, outPath);
       } else {

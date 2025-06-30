@@ -16,6 +16,18 @@ public class ConsoleActivity extends AppCompatActivity {
     consoleOutput = findViewById(R.id.consoleOutput);
     backButton = findViewById(R.id.backButton);
     backButton.setEnabled(false);
+    // Установка полного размера и копируемости
+    consoleOutput.setLayoutParams(new LinearLayout.LayoutParams(
+      LinearLayout.LayoutParams.MATCH_PARENT,
+      LinearLayout.LayoutParams.MATCH_PARENT,
+      1.0f));
+    consoleOutput.setTextIsSelectable(true);
+    // Ограничение высоты для кнопки
+    LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
+      LinearLayout.LayoutParams.WRAP_CONTENT,
+      LinearLayout.LayoutParams.WRAP_CONTENT);
+    buttonParams.setMargins(0, 0, 0, 16);
+    backButton.setLayoutParams(buttonParams);
     // Получение команды
     String command = getIntent().getStringExtra("command");
     String[] env = null;

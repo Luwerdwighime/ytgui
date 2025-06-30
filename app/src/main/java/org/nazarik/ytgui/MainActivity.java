@@ -38,14 +38,15 @@ public class MainActivity extends AppCompatActivity {
       File gitBinFile = new File(gitBinDir, "git");
       if (!gitBinFile.exists()) {
         GitUtils.copyFolder(this, "git-bin", gitBinDir);
-        // Установка прав для git
+        // Установка прав для git и папки
         gitBinFile.setExecutable(true, false);
-        // Проверка прав доступа
         File dir = new File(gitBinDir);
         if (!dir.setReadable(true, false) || !dir.setWritable(true, false)) {
           Log.w("ytgui", "Failed to set directory permissions for " + gitBinDir);
         }
-        Log.d("ytgui", "Git-bin folder copied and git set executable");
+        // Установка прав для всех файлов в папке
+        setPermissionsRecursively(dir);
+        Log.d("ytgui", "Git-bin folder copied and permissions set");
       } else {
         Log.d("ytgui", "Git-bin folder already exists");
       }
@@ -73,6 +74,22 @@ public class MainActivity extends AppCompatActivity {
       }
     } catch (Exception e) {
       Log.e("ytgui", "Failed to setup git", e);
+    }
+  }
+  private void setPermissionsRecursively(File dir) {
+    // Установка прав для всех файлов и папок
+    if (dir.isDirectory()) {
+      File[] files = dir.listFiles();
+      if (files != null) {
+        for (File file : files) {
+          if (file.isDirectory()) {
+            setPermissionsRecursively(file);
+          }
+          if (!file.setReadable(true, false) || !file.setExecutable(true, false)) {
+            Log.w("ytgui", "Failed to set permissions for " + file.getAbsolutePath());
+          }
+        }
+      }
     }
   }
 }
