@@ -1,6 +1,7 @@
 package org.nazarik.ytgui;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.BufferedReader;
@@ -19,6 +20,11 @@ public class GitUtils {
       if (!parentDir.exists() && !parentDir.mkdirs()) {
         Log.e("ytgui", "Failed to create directory: " + parentDir.getAbsolutePath());
         throw new Exception("Failed to create directory");
+      }
+      // Проверка прав записи
+      if (!parentDir.canWrite()) {
+        Log.e("ytgui", "Cannot write to directory: " + parentDir.getAbsolutePath());
+        throw new Exception("Cannot write to directory");
       }
       // Копирование данных
       try (FileOutputStream out = new FileOutputStream(outFile)) {
@@ -45,6 +51,8 @@ public class GitUtils {
   public static void runCommand(Context context, String command, TextView consoleOutput, String[] env) {
     new Thread(() -> {
       try {
+        // Логирование команды
+        Log.d("ytgui", "Executing command: " + command);
         // Запуск команды
         Process process = Runtime.getRuntime().exec(command, env);
         // Чтение stdout в потоке
