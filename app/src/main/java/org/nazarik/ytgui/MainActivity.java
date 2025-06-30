@@ -32,13 +32,20 @@ public class MainActivity extends AppCompatActivity {
   private void setupAssetsAndGit() {
     // Подготовка путей
     String filesDir = getFilesDir().getAbsolutePath();
-    String gitPath = filesDir + "/git";
-    // Копирование git
+    String gitBinDir = filesDir + "/git-bin";
+    // Копирование папки git-bin
     try {
-      GitUtils.copyFile(this, "git", gitPath, true);
-      Log.d("ytgui", "Git binary copied successfully");
+      File gitBinFile = new File(gitBinDir, "git");
+      if (!gitBinFile.exists()) {
+        GitUtils.copyFolder(this, "git-bin", gitBinDir);
+        // Установка исполняемого бита для git
+        gitBinFile.setExecutable(true, false);
+        Log.d("ytgui", "Git-bin folder copied and git set executable");
+      } else {
+        Log.d("ytgui", "Git-bin folder already exists");
+      }
     } catch (Exception e) {
-      Log.e("ytgui", "Failed to copy git binary", e);
+      Log.e("ytgui", "Failed to copy git-bin folder", e);
       return;
     }
     // Настройка репозитория ytgui-env
@@ -47,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
       if (!envDir.exists()) {
         // Запуск клонирования через ConsoleActivity
         Log.d("ytgui", "Starting ConsoleActivity for cloning ytgui-env via SSH");
-        String command = gitPath + " clone --depth=1 git@github.com:Luwerdwighime/ytgui-env.git " + envDir.getAbsolutePath();
+        String command = gitBinDir + "/git clone --depth=1 git@github.com:Luwerdwighime/ytgui-env.git " + envDir.getAbsolutePath();
         Intent intent = new Intent(this, ConsoleActivity.class);
         intent.putExtra("command", command);
         startActivityForResult(intent, 1);
       } else {
         // Запуск пулла через ConsoleActivity
         Log.d("ytgui", "Starting ConsoleActivity for pulling ytgui-env via SSH");
-        String command = gitPath + " -C " + envDir.getAbsolutePath() + " pull origin main";
+        String command = gitBinDir + "/git -C " + envDir.getAbsolutePath() + " pull origin main";
         Intent intent = new Intent(this, ConsoleActivity.class);
         intent.putExtra("command", command);
         startActivityForResult(intent, 1);

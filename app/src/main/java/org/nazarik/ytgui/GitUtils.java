@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 public class GitUtils {
   // Копирование файла из assets в files
-  public static void copyFile(Context context, String assetPath, String outputPath, boolean setExecutable) throws Exception {
+  public static void copyFile(Context context, String assetPath, String outputPath) throws Exception {
     // Проверка существования актива
     try (InputStream in = context.getAssets().open(assetPath)) {
       // Проверка директории
@@ -34,21 +34,30 @@ public class GitUtils {
           out.write(buffer, 0, bytes);
         }
       }
-      // Установка исполняемого бита
-      if (setExecutable) {
-        if (!outFile.setExecutable(true, false)) {
-          Log.e("ytgui", "Failed to set executable permissions for " + outputPath);
-          throw new Exception("Failed to set executable permissions");
-        }
-      }
       Log.d("ytgui", "Copied " + assetPath + " to " + outputPath);
     } catch (Exception e) {
       Log.e("ytgui", "Failed to copy " + assetPath + ": " + e.getMessage());
       throw e;
     }
   }
+  // Копирование папки из assets в files
+  public static void copyFolder(Context context, String assetDir, String outputDir) throws Exception {
+    // Проверка существования актива
+    String[] files = context.getAssets().list(assetDir);
+    if (files == null) return;
+    File outDir = new File(outputDir);
+    if (!outDir.exists() && !outDir.mkdirs()) {
+      Log.e("ytgui", "Failed to create directory: " + outputDir);
+      throw new Exception("Failed to create directory");
+    }
+    for (String file : files) {
+      String assetPath = assetDir + "/" + file;
+      String outPath = outputDir + "/" + file;
+      copyFile(context, assetPath, outPath);
+    }
+  }
   // Выполнение команды с выводом в TextView или Logcat
-  public static void runCommand(Context context, String command, TextView consoleOutput, String[] env) {
+  public static void runCommand(Context context, String command, TextView consoleOutput, String[] env, java.util.function.Consumer<Integer> onComplete) {
     new Thread(() -> {
       try {
         // Логирование команды
@@ -91,15 +100,18 @@ public class GitUtils {
         stdoutThread.start();
         stderrThread.start();
         // Ожидание завершения
-        process.waitFor();
+        int exitCode = process.waitFor();
         stdoutThread.join();
         stderrThread.join();
-        // Разблокировка кнопки
+        // Вызов коллбэка с кодом завершения
         if (consoleOutput != null) {
           ((AppCompatActivity) context).runOnUiThread(() -> {
             Button backButton = ((AppCompatActivity) context).findViewById(R.id.backButton);
             if (backButton != null) backButton.setEnabled(true);
+            onComplete.accept(exitCode);
           });
+        } else {
+          onComplete.accept(exitCode);
         }
       } catch (Exception e) {
         // Логирование ошибки
@@ -109,9 +121,11 @@ public class GitUtils {
           ((AppCompatActivity) context).runOnUiThread(() -> {
             Button backButton = ((AppCompatActivity) context).findViewById(R.id.backButton);
             if (backButton != null) backButton.setEnabled(true);
+            onComplete.accept(-1);
           });
         } else {
           Log.e("ytgui", "Command failed: " + error);
+          onComplete.accept(-1);
         }
       }
     }).start();
