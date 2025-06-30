@@ -30,12 +30,13 @@ public class ConsoleActivity extends AppCompatActivity {
       return;
     }
     try {
-      // Разбиваем команду и добавляем через ProcessBuilder
+      // Разбиваем команду и задаём исполняемый файл
       String[] commandParts = command.split("\\s+");
       List<String> commandList = new ArrayList<>();
-      for (String part : commandParts) {
-        if (!part.isEmpty()) {
-          commandList.add(part);
+      commandList.add(gitBinDir + "/git"); // Исполняемый файл git
+      for (int i = 1; i < commandParts.length; i++) {
+        if (!commandParts[i].isEmpty()) {
+          commandList.add(commandParts[i]);
         }
       }
       ProcessBuilder pb = new ProcessBuilder(commandList);
