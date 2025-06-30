@@ -16,7 +16,7 @@ void copyFile(AAssetManager* mgr, const std::string& assetPath, const std::strin
     __android_log_print(ANDROID_LOG_ERROR, "ytgui", "Failed to open asset: %s", assetPath.c_str());
     return;
   }
-  // Открытие выходного файла
+  // Проверка существования выходного файла
   std::ofstream out(outputPath, std::ios::binary);
   if (!out) {
     AAsset_close(asset);
@@ -43,6 +43,8 @@ void copyFile(AAssetManager* mgr, const std::string& assetPath, const std::strin
     if (chmod(outputPath.c_str(), 0700) != 0) {
       __android_log_print(ANDROID_LOG_ERROR, "ytgui", "Failed to set executable permissions for %s", outputPath.c_str());
       return;
+    } else {
+      __android_log_print(ANDROID_LOG_INFO, "ytgui", "Set executable permissions for %s", outputPath.c_str());
     }
   }
   // Логирование успеха
@@ -70,6 +72,18 @@ Java_org_nazarik_ytgui_MainActivity_copyFile(JNIEnv* env, jobject /* this */, jo
     __android_log_print(ANDROID_LOG_ERROR, "ytgui", "Failed to get outputPath string");
     env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Failed to get outputPath string");
     return;
+  }
+  // Проверка существования выходной директории
+  std::string outputDir = std::string(outputPathStr);
+  size_t lastSlash = outputDir.find_last_of('/');
+  if (lastSlash != std::string::npos) {
+    outputDir = outputDir.substr(0, lastSlash);
+    if (mkdir(outputDir.c_str(), 0700) != 0 && errno != EEXIST) {
+      __android_log_print(ANDROID_LOG_ERROR, "ytgui", "Failed to create output directory: %s", outputDir.c_str());
+      env->ReleaseStringUTFChars(assetPath, assetPathStr);
+      env->ReleaseStringUTFChars(outputPath, outputPathStr);
+      return;
+    }
   }
   // Вызов копирования
   copyFile(mgr, assetPathStr, outputPathStr);
