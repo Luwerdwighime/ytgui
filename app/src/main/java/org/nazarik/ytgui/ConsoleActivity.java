@@ -1,45 +1,49 @@
 package org.nazarik.ytgui;
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.LinearLayout;  // Добавлен импорт
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ConsoleActivity extends AppCompatActivity {
-  private TextView consoleOutput;
-  private Button backButton;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    // Инициализация UI
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_console);
-    // Настройка элементов UI
-    consoleOutput = findViewById(R.id.consoleOutput);
-    backButton = findViewById(R.id.backButton);
-    backButton.setEnabled(false);
-    // Установка полного размера и копируемости
-    consoleOutput.setLayoutParams(new LinearLayout.LayoutParams(
-      LinearLayout.LayoutParams.MATCH_PARENT,
-      LinearLayout.LayoutParams.MATCH_PARENT,
-      1.0f));
-    consoleOutput.setTextIsSelectable(true);
-    // Ограничение высоты для кнопки
-    LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
-      LinearLayout.LayoutParams.WRAP_CONTENT,
-      LinearLayout.LayoutParams.WRAP_CONTENT);
-    buttonParams.setMargins(0, 0, 0, 16);
-    backButton.setLayoutParams(buttonParams);
-    // Получение команды
-    String command = getIntent().getStringExtra("command");
-    String[] env = null;
-    // Запуск команды
-    GitUtils.runCommand(this, command, consoleOutput, env, resultCode -> {
-      // Установка результата для MainActivity
-      setResult(resultCode);
-      backButton.setEnabled(true);
-    });
-    // Настройка кнопки возврата
-    backButton.setOnClickListener(v -> finish());
+    String filesDir = getFilesDir().getAbsolutePath();
+    String gitBinDir = filesDir + "/git-bin";
+    String sshKeyPath = gitBinDir + "/.ssh/id_rsa";
+    String envDir = filesDir + "/ytgui-env";
+    File sshKey = new File(sshKeyPath);
+    if (!sshKey.exists()) {
+      Log.e("ytgui", "SSH key not found at " + sshKeyPath);
+      setResult(RESULT_CANCELED);
+      finish();
+      return;
+    }
+    String command = gitBinDir + "/git clone --depth=1 git@github.com:Luwerdwighime/ytgui-env.git " + envDir;
+    try {
+      // Настройка переменной окружения для SSH
+      Map<String, String> env = new HashMap<>();
+      env.put("GIT_SSH_COMMAND", "ssh -i " + sshKeyPath);
+      ProcessBuilder pb = new ProcessBuilder(command.split("\\s+"));
+      pb.environment().putAll(env);
+      pb.directory(new File(filesDir));
+      Process process = pb.start();
+      int exitCode = process.waitFor();
+      if (exitCode == 0) {
+        Log.d("ytgui", "Git clone succeeded");
+        setResult(RESULT_OK);
+      } else {
+        Log.e("ytgui", "Git clone failed with exit code: " + exitCode);
+        setResult(RESULT_CANCELED);
+      }
+    } catch (Exception e) {
+      Log.e("ytgui", "Exception during git clone", e);
+      setResult(RESULT_CANCELED);
+    }
+    finish();
   }
 }
 
