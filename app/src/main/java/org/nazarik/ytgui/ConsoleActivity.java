@@ -4,6 +4,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.LinearLayout;  // Добавлен импорт
 public class ConsoleActivity extends AppCompatActivity {
   private TextView consoleOutput;
   private Button backButton;
