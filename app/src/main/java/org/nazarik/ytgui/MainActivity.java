@@ -3,7 +3,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.Button;
 import java.io.File;
 public class MainActivity extends AppCompatActivity {
   @Override
@@ -13,40 +12,52 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     // Настройка активов и git
     setupAssetsAndGit();
-    // Настройка кнопки перехода
-    Button nextButton = findViewById(R.id.nextButton);
-    nextButton.setOnClickListener(v -> {
+  }
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    // Обработка результата ConsoleActivity
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == 1 && resultCode == RESULT_OK) {
+      Log.d("ytgui", "Git setup completed successfully");
+      // Переход в DownloadActivity
       Intent intent = new Intent(this, DownloadActivity.class);
       startActivity(intent);
-    });
+      finish();
+    } else {
+      Log.e("ytgui", "Git setup failed with resultCode: " + resultCode);
+      // Повторный запуск при ошибке
+      setupAssetsAndGit();
+    }
   }
   private void setupAssetsAndGit() {
     // Подготовка путей
     String filesDir = getFilesDir().getAbsolutePath();
     String gitPath = filesDir + "/git";
-    String certPath = filesDir + "/ca-certificates.crt";
-    // Копирование активов
+    // Копирование git
     try {
       GitUtils.copyFile(this, "git", gitPath, true);
-      GitUtils.copyFile(this, "ca-certificates.crt", certPath, false);
-      Log.d("ytgui", "Assets copied successfully");
+      Log.d("ytgui", "Git binary copied successfully");
     } catch (Exception e) {
-      Log.e("ytgui", "Failed to copy assets", e);
+      Log.e("ytgui", "Failed to copy git binary", e);
       return;
     }
     // Настройка репозитория ytgui-env
     File envDir = new File(filesDir, "ytgui-env");
     try {
       if (!envDir.exists()) {
-        // Клонирование ytgui-env
-        Log.d("ytgui", "Cloning ytgui-env");
-        String command = gitPath + " clone --depth=1 https://github.com/Luwerdwighime/ytgui-env.git " + envDir.getAbsolutePath();
-        GitUtils.runCommand(this, command, null, new String[] {"GIT_SSL_CAINFO=" + certPath});
+        // Запуск клонирования через ConsoleActivity
+        Log.d("ytgui", "Starting ConsoleActivity for cloning ytgui-env via SSH");
+        String command = gitPath + " clone --depth=1 git@github.com:Luwerdwighime/ytgui-env.git " + envDir.getAbsolutePath();
+        Intent intent = new Intent(this, ConsoleActivity.class);
+        intent.putExtra("command", command);
+        startActivityForResult(intent, 1);
       } else {
-        // Пулл ytgui-env
-        Log.d("ytgui", "Pulling ytgui-env");
+        // Запуск пулла через ConsoleActivity
+        Log.d("ytgui", "Starting ConsoleActivity for pulling ytgui-env via SSH");
         String command = gitPath + " -C " + envDir.getAbsolutePath() + " pull origin main";
-        GitUtils.runCommand(this, command, null, new String[] {"GIT_SSL_CAINFO=" + certPath});
+        Intent intent = new Intent(this, ConsoleActivity.class);
+        intent.putExtra("command", command);
+        startActivityForResult(intent, 1);
       }
     } catch (Exception e) {
       Log.e("ytgui", "Failed to setup git", e);
