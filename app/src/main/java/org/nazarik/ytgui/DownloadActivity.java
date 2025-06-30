@@ -1,6 +1,4 @@
 package org.nazarik.ytgui;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,21 +7,30 @@ import android.widget.EditText;
 public class DownloadActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    // Инициализация UI
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_download);
+    // Настройка элементов UI
     EditText urlInput = findViewById(R.id.urlInput);
     Button pasteButton = findViewById(R.id.pasteButton);
     Button downloadButton = findViewById(R.id.downloadButton);
+    // Настройка кнопки вставки
     pasteButton.setOnClickListener(v -> {
-      ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+      android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
       if (clipboard.hasPrimaryClip()) {
         urlInput.setText(clipboard.getPrimaryClip().getItemAt(0).getText());
       }
     });
+    // Настройка кнопки скачивания
     downloadButton.setOnClickListener(v -> {
-      Intent intent = new Intent(this, ConsoleActivity.class);
-      intent.putExtra("command", getFilesDir() + "/git --version");
-      startActivity(intent);
+      String url = urlInput.getText().toString();
+      if (!url.isEmpty()) {
+        String filesDir = getFilesDir().getAbsolutePath();
+        String command = filesDir + "/git --version"; // Временная команда для теста
+        Intent intent = new Intent(this, ConsoleActivity.class);
+        intent.putExtra("command", command);
+        startActivity(intent);
+      }
     });
   }
 }
