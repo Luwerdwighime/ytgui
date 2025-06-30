@@ -67,6 +67,12 @@ public class GitUtils {
   public static void runCommand(Context context, String command, TextView consoleOutput, String[] env, java.util.function.Consumer<Integer> onComplete) {
     new Thread(() -> {
       try {
+        // Проверка существования и прав команды
+        File cmdFile = new File(command.split(" ")[0]);
+        if (!cmdFile.exists() || !cmdFile.canExecute()) {
+          Log.e("ytgui", "Command file not found or not executable: " + cmdFile.getAbsolutePath());
+          throw new Exception("Command not executable");
+        }
         // Логирование команды
         Log.d("ytgui", "Executing command: " + command);
         // Запуск команды
@@ -121,8 +127,9 @@ public class GitUtils {
           onComplete.accept(exitCode);
         }
       } catch (Exception e) {
-        // Логирование ошибки
-        String error = e.getMessage();
+        // Логирование полной ошибки
+        String error = "Command failed: " + e.getMessage();
+        Log.e("ytgui", error, e);
         if (consoleOutput != null) {
           ((AppCompatActivity) context).runOnUiThread(() -> consoleOutput.append("Error: " + error + "\n"));
           ((AppCompatActivity) context).runOnUiThread(() -> {
@@ -131,7 +138,6 @@ public class GitUtils {
             onComplete.accept(-1);
           });
         } else {
-          Log.e("ytgui", "Command failed: " + error);
           onComplete.accept(-1);
         }
       }
