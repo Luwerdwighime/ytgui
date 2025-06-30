@@ -3,6 +3,8 @@ import android.os.Bundle;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConsoleActivity extends AppCompatActivity {
   @Override
@@ -28,19 +30,30 @@ public class ConsoleActivity extends AppCompatActivity {
       return;
     }
     try {
-      GitUtils.runCommand(this, command, findViewById(R.id.consoleOutput), new String[]{"GIT_SSH_COMMAND=ssh -i " + sshKeyPath}, exitCode -> {
-        if (exitCode == 0) {
-          setResult(RESULT_OK);
-        } else {
-          setResult(RESULT_CANCELED);
+      // Разбиваем команду и добавляем через ProcessBuilder
+      String[] commandParts = command.split("\\s+");
+      List<String> commandList = new ArrayList<>();
+      for (String part : commandParts) {
+        if (!part.isEmpty()) {
+          commandList.add(part);
         }
-        finish();
-      });
+      }
+      ProcessBuilder pb = new ProcessBuilder(commandList);
+      // Устанавливаем переменную окружения
+      pb.environment().put("GIT_SSH_COMMAND", "ssh -i " + sshKeyPath);
+      pb.directory(new File(filesDir));
+      Process process = pb.start();
+      int exitCode = process.waitFor();
+      if (exitCode == 0) {
+        setResult(RESULT_OK);
+      } else {
+        setResult(RESULT_CANCELED);
+      }
     } catch (Exception e) {
       Log.e("ytgui", "Exception during git clone", e);
       setResult(RESULT_CANCELED);
-      finish();
     }
+    finish();
   }
 }
 
