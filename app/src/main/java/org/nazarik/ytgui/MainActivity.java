@@ -4,47 +4,41 @@ import android.os.Bundle;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
+
 public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    // Инициализация UI
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    // Настройка активов и git
     setupAssetsAndGit();
   }
+
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    // Обработка результата ConsoleActivity
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == 1 && resultCode == RESULT_OK) {
       Log.d("ytgui", "Git setup completed successfully");
-      // Переход в DownloadActivity
       Intent intent = new Intent(this, DownloadActivity.class);
       startActivity(intent);
       finish();
     } else {
       Log.e("ytgui", "Git setup failed with resultCode: " + resultCode);
-      // Повтор при ошибке
       setupAssetsAndGit();
     }
   }
+
   private void setupAssetsAndGit() {
-    // Подготовка путей
     String filesDir = getFilesDir().getAbsolutePath();
     String gitBinDir = filesDir + "/git-bin";
-    // Копирование папки git-bin
     try {
       File gitBinFile = new File(gitBinDir, "git");
       if (!gitBinFile.exists()) {
-        GitUtils.copyFolder(this, "git-bin", gitBinDir);
-        // Установка прав для git и папки
+        // Копирование git-bin с учётом скрытых папок
+        copyFolderRecursively(this, "git-bin", gitBinDir);
         gitBinFile.setExecutable(true, false);
         File dir = new File(gitBinDir);
-        if (!dir.setReadable(true, false) || !dir.setWritable(true, false)) {
-          Log.w("ytgui", "Failed to set directory permissions for " + gitBinDir);
-        }
-        // Установка прав для всех файлов в папке
+        dir.setReadable(true, false);
+        dir.setWritable(true, false);
         setPermissionsRecursively(dir);
         Log.d("ytgui", "Git-bin folder copied and permissions set");
       } else {
@@ -54,41 +48,59 @@ public class MainActivity extends AppCompatActivity {
       Log.e("ytgui", "Failed to copy git-bin folder", e);
       return;
     }
-    // Настройка репозитория ytgui-env
     File envDir = new File(filesDir, "ytgui-env");
-    try {
-      if (!envDir.exists()) {
-        // Запуск клонирования через ConsoleActivity
-        Log.d("ytgui", "Starting ConsoleActivity for cloning ytgui-env via SSH");
-        String command = gitBinDir + "/git clone --depth=1 git@github.com:Luwerdwighime/ytgui-env.git " + envDir.getAbsolutePath();
-        Intent intent = new Intent(this, ConsoleActivity.class);
-        intent.putExtra("command", command);
-        startActivityForResult(intent, 1);
-      } else {
-        // Запуск пулла через ConsoleActivity
-        Log.d("ytgui", "Starting ConsoleActivity for pulling ytgui-env via SSH");
-        String command = gitBinDir + "/git -C " + envDir.getAbsolutePath() + " pull origin main";
-        Intent intent = new Intent(this, ConsoleActivity.class);
-        intent.putExtra("command", command);
-        startActivityForResult(intent, 1);
-      }
-    } catch (Exception e) {
-      Log.e("ytgui", "Failed to setup git", e);
+    if (!envDir.exists()) {
+      Log.d("ytgui", "Starting ConsoleActivity for cloning ytgui-env via SSH");
+      String sshKeyPath = gitBinDir + "/.ssh/id_rsa";
+      String command = "GIT_SSH_COMMAND='ssh -i " + sshKeyPath + "' " +
+                       gitBinDir + "/git clone --depth=1 git@github.com:Luwerdwighime/ytgui-env.git " + envDir;
+      Intent intent = new Intent(this, ConsoleActivity.class);
+      intent.putExtra("command", command);
+      startActivityForResult(intent, 1);
     }
   }
-  private void setPermissionsRecursively(File dir) {
-    // Установка прав для всех файлов и папок
-    if (dir.isDirectory()) {
-      File[] files = dir.listFiles();
+
+  private void copyFolderRecursively(AppCompatActivity context, String assetFolder, String destFolder) {
+    try {
+      File destDir = new File(destFolder);
+      if (!destDir.exists()) {
+        destDir.mkdirs();
+      }
+      String[] files = context.getAssets().list(assetFolder);
       if (files != null) {
-        for (File file : files) {
-          if (file.isDirectory()) {
-            setPermissionsRecursively(file);
-          }
-          if (!file.setReadable(true, false) || !file.setExecutable(true, false)) {
-            Log.w("ytgui", "Failed to set permissions for " + file.getAbsolutePath());
+        for (String file : files) {
+          String newAssetPath = assetFolder.isEmpty() ? file : assetFolder + "/" + file;
+          String[] subFiles = context.getAssets().list(newAssetPath);
+          if (subFiles != null && subFiles.length > 0) {
+            copyFolderRecursively(context, newAssetPath, destFolder + "/" + file);
+          } else {
+            java.io.InputStream in = context.getAssets().open(newAssetPath);
+            java.io.File outFile = new File(destFolder, file);
+            java.io.OutputStream out = new java.io.FileOutputStream(outFile);
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+              out.write(buffer, 0, read);
+            }
+            in.close();
+            out.flush();
+            out.close();
+            outFile.setExecutable(file.endsWith("git"), false);
           }
         }
+      }
+    } catch (Exception e) {
+      Log.e("ytgui", "Error copying folder recursively", e);
+    }
+  }
+
+  private void setPermissionsRecursively(File dir) {
+    dir.setReadable(true, false);
+    dir.setWritable(true, false);
+    dir.setExecutable(true, false);
+    if (dir.isDirectory()) {
+      for (File file : dir.listFiles()) {
+        setPermissionsRecursively(file);
       }
     }
   }
