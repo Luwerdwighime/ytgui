@@ -38,8 +38,13 @@ public class MainActivity extends AppCompatActivity {
       File gitBinFile = new File(gitBinDir, "git");
       if (!gitBinFile.exists()) {
         GitUtils.copyFolder(this, "git-bin", gitBinDir);
-        // Установка исполняемого бита для git
+        // Установка прав для git
         gitBinFile.setExecutable(true, false);
+        // Проверка прав доступа
+        File dir = new File(gitBinDir);
+        if (!dir.setReadable(true, false) || !dir.setWritable(true, false)) {
+          Log.w("ytgui", "Failed to set directory permissions for " + gitBinDir);
+        }
         Log.d("ytgui", "Git-bin folder copied and git set executable");
       } else {
         Log.d("ytgui", "Git-bin folder already exists");

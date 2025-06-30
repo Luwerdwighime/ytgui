@@ -40,7 +40,7 @@ public class GitUtils {
       throw e;
     }
   }
-  // Копирование папки из assets в files
+  // Копирование папки из assets в files с рекурсией
   public static void copyFolder(Context context, String assetDir, String outputDir) throws Exception {
     // Проверка существования актива
     String[] files = context.getAssets().list(assetDir);
@@ -53,7 +53,13 @@ public class GitUtils {
     for (String file : files) {
       String assetPath = assetDir + "/" + file;
       String outPath = outputDir + "/" + file;
-      copyFile(context, assetPath, outPath);
+      if (context.getAssets().list(assetPath) != null) {
+        // Рекурсивно копируем подпапку
+        copyFolder(context, assetPath, outPath);
+      } else {
+        // Копируем файл
+        copyFile(context, assetPath, outPath);
+      }
     }
   }
   // Выполнение команды с выводом в TextView или Logcat
