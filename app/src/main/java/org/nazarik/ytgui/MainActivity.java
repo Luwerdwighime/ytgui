@@ -38,10 +38,9 @@ public class MainActivity extends AppCompatActivity {
       if (!gitBinFile.exists()) {
         GitUtils.copyFolder(this, "git-bin", gitBinDir);
         gitBinFile.setExecutable(true, false);
-        GitUtils.copyFolder(this, "git-bin/.ssh", gitBinDir + "/.ssh");
-        File sshDir = new File(gitBinDir + "/.ssh");
+        File sshDir = new File(gitBinDir + "/ssh");
         if (!sshDir.exists()) {
-          Log.w("ytgui", ".ssh folder not found after copy");
+          Log.w("ytgui", "ssh folder not found after copy");
         }
       }
     } catch (Exception e) {
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     }
     File envDir = new File(filesDir, "ytgui-env");
     if (!envDir.exists()) {
-      String sshKeyPath = gitBinDir + "/.ssh/id_rsa";
+      String sshKeyPath = gitBinDir + "/ssh/id_rsa";
       String command = "GIT_SSH_COMMAND='ssh -i " + sshKeyPath + "' " +
                        gitBinDir + "/git clone --depth=1 git@github.com:Luwerdwighime/ytgui-env.git " + envDir;
       Intent intent = new Intent(this, ConsoleActivity.class);
