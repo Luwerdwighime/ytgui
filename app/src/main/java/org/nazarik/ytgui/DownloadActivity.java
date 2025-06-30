@@ -1,6 +1,7 @@
 package org.nazarik.ytgui;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
@@ -20,7 +21,9 @@ public class DownloadActivity extends AppCompatActivity {
       }
     });
     downloadButton.setOnClickListener(v -> {
-      // Заглушка для будущей C++ логики
+      Intent intent = new Intent(this, ConsoleActivity.class);
+      intent.putExtra("command", getFilesDir() + "/git --version");
+      startActivity(intent);
     });
   }
 }

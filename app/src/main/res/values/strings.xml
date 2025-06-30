@@ -4,4 +4,6 @@
   <string name="url_hint">Введите URL видео</string>
   <string name="paste_button">Вставить из буфера</string>
   <string name="download_button">Скачать видео</string>
+  <string name="back_button">Назад</string>
+  <string name="console_placeholder">Консольный вывод...</string>
 </resources>
