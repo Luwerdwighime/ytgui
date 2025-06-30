@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
       finish();
     } else {
       Log.e("ytgui", "Git setup failed with resultCode: " + resultCode);
-      // Повторный запуск при ошибке
+      // Повтор при ошибке
       setupAssetsAndGit();
     }
   }
