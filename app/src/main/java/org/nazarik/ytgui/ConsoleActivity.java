@@ -16,17 +16,17 @@ public class ConsoleActivity extends AppCompatActivity {
     consoleOutput = findViewById(R.id.consoleOutput);
     backButton = findViewById(R.id.backButton);
     backButton.setEnabled(false);
-    // Получение команды и окружения
+    // Получение команды
     String command = getIntent().getStringExtra("command");
-    String[] env = getIntent().getStringArrayExtra("env");
+    String[] env = null;
     // Запуск команды
-    GitUtils.runCommand(this, command, consoleOutput, env);
-    // Настройка кнопки возврата
-    backButton.setOnClickListener(v -> {
-      Intent intent = new Intent(this, DownloadActivity.class);
-      startActivity(intent);
-      finish();
+    GitUtils.runCommand(this, command, consoleOutput, env, resultCode -> {
+      // Установка результата для MainActivity
+      setResult(resultCode);
+      backButton.setEnabled(true);
     });
+    // Настройка кнопки возврата
+    backButton.setOnClickListener(v -> finish());
   }
 }
 
