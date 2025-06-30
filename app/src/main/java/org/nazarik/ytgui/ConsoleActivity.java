@@ -4,6 +4,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.TextView;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 public class ConsoleActivity extends AppCompatActivity {
   private TextView consoleOutput;
   private Button backButton;

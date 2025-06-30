@@ -5,21 +5,26 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:padding="16dp">
-  <TextView
-    android:id="@+id/consoleOutput"
+  <ScrollView
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:background="#000000"
-    android:textColor="#00FF00"
-    android:textSize="14sp"
-    android:fontFamily="monospace"
-    android:padding="8dp"
-    android:text="@string/console_placeholder"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintBottom_toTopOf="@id/backButton"
-    android:layout_marginBottom="16dp"/>
+    android:layout_marginBottom="16dp">
+    <TextView
+      android:id="@+id/consoleOutput"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="#000000"
+      android:textColor="#00FF00"
+      android:textSize="14sp"
+      android:fontFamily="monospace"
+      android:padding="8dp"
+      android:scrollbars="vertical"
+      android:text="@string/console_placeholder"/>
+  </ScrollView>
   <Button
     android:id="@+id/backButton"
     android:layout_width="wrap_content"
