@@ -30,9 +30,7 @@ jobs:
 
 # Сборка с отладочной информацией
     - name: Build with Gradle and Stacktrace
-        run: ./gradlew build --stacktrace assembleDebug
-        env:
-          TERM: dumb  # Убираем цветные выводы, если мешают
+        run: ./gradlew build --stacktrace
 
       - name: Upload build reports
         if: failure()  # Загружаем отчёты только при сбое
