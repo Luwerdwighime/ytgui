@@ -30,7 +30,7 @@ jobs:
 
 # Сборка с отладочной информацией
     - name: Build with Gradle and Stacktrace
-        run: ./gradlew build --stacktrace --info
+        run: ./gradlew build --stacktrace assembleDebug
         env:
           TERM: dumb  # Убираем цветные выводы, если мешают
 
@@ -44,5 +44,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ytgui
-        path: app/build/outputs/apk/release/app-release.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
 

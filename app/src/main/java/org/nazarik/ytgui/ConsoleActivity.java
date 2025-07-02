@@ -25,9 +25,10 @@ public class ConsoleActivity extends AppCompatActivity {
       finish();
       return;
     }
-    String command = getIntent().getStringExtra("command");
+    Bundle extras = getIntent().getExtras();
+    String command = extras != null ? extras.getString("command") : null;
     if (command == null) {
-      Log.e("ytgui", "No command provided");
+      Log.e("ytgui", "No command provided in extras");
       if (consoleOutput != null) {
         consoleOutput.append("ОШИБКА: Команда не предоставлена.\n");
       }
