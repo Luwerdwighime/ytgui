@@ -9,8 +9,7 @@ import java.util.ArrayList;
 public class ConsoleActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_console);
+    super.onCreate(setContentView(R.layout.activity_console);
     TextView consoleOutput = findViewById(R.id.consoleOutput);
     String filesDir = getFilesDir().getAbsolutePath();
     String gitBinDir = filesDir + "/git-bin";
@@ -42,17 +41,17 @@ public class ConsoleActivity extends AppCompatActivity {
     String[] envVars = new String[]{"GIT_SSH_COMMAND=ssh -i " + sshKeyPath};
     ArrayList<String> optionsList = new ArrayList<>();
     String[] parts = command.split("\\s+");
-    boolean skipEnv = false;
+    boolean inEnv = false;
     for (String part : parts) {
       if (part.startsWith("GIT_SSH_COMMAND=")) {
-        skipEnv = true;
+        inEnv = true;
         continue;
       }
-      if (!skipEnv && !part.equals(executable)) {
+      if (inEnv && part.contains("'")) {
+        inEnv = false; // Завершаем обработку env, когда закрываем кавычки
         continue;
       }
-      skipEnv = false;
-      if (!part.isEmpty() && !part.equals(executable)) {
+      if (!inEnv && !part.isEmpty() && !part.equals(executable)) {
         optionsList.add(part);
       }
     }
