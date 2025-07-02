@@ -22,9 +22,25 @@ jobs:
       run: gradle wrapper --gradle-version 8.10
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
-    - name: Build Release APK
-      run: ./gradlew clean assembleRelease
-    - name: Upload APK
+
+# Обычная сборка
+#    - name: Build Release APK
+#      run: ./gradlew clean assembleRelease
+#    - name: Upload APK
+
+# Сборка с отладочной информацией
+    - name: Build with Gradle and Stacktrace
+        run: ./gradlew build --stacktrace --info
+        env:
+          TERM: dumb  # Убираем цветные выводы, если мешают
+
+      - name: Upload build reports
+        if: failure()  # Загружаем отчёты только при сбое
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-reports
+          path: app/build/reports
+
       uses: actions/upload-artifact@v4
       with:
         name: ytgui
