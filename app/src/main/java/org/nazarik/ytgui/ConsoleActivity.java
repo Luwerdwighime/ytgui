@@ -34,12 +34,13 @@ public class ConsoleActivity extends AppCompatActivity {
       finish();
       return;
     }
-    Log.d("ytgui", "Received command: " + command); // Отладка входной команды
+    Log.d("ytgui", "Received command: " + command);
     // Подготовка данных для Subproc
-    String[] commandParts = command.split("\\s+", 2);
     String executable = gitBinDir + "/git";
-    String[] options = (commandParts.length > 1 && !commandParts[1].isEmpty()) ? commandParts[1].split("\\s+") : new String[0];
     String[] envVars = new String[]{"GIT_SSH_COMMAND=ssh -i " + sshKeyPath};
+    // Извлекаем только аргументы команды (clone и далее)
+    String[] commandParts = command.split("\\s+", 2);
+    String[] options = (commandParts.length > 1) ? commandParts[1].replaceFirst("GIT_SSH_COMMAND='ssh -i " + sshKeyPath + "'\\s*", "").split("\\s+") : new String[0];
     Log.d("ytgui", "Executable: " + executable + ", Options: " + String.join(" ", options));
     // Создание и запуск процесса
     Subproc subproc = new Subproc(this, executable, options, envVars, consoleOutput);
