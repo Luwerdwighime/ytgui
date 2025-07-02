@@ -34,16 +34,17 @@ public class ConsoleActivity extends AppCompatActivity {
       finish();
       return;
     }
+    Log.d("ytgui", "Received command: " + command); // Отладка входной команды
     // Подготовка данных для Subproc
     String[] commandParts = command.split("\\s+", 2);
     String executable = gitBinDir + "/git";
     String[] options = (commandParts.length > 1 && !commandParts[1].isEmpty()) ? commandParts[1].split("\\s+") : new String[0];
     String[] envVars = new String[]{"GIT_SSH_COMMAND=ssh -i " + sshKeyPath};
-    Log.d("ytgui", "Executing: " + executable + " with options: " + String.join(" ", options));
+    Log.d("ytgui", "Executable: " + executable + ", Options: " + String.join(" ", options));
     // Создание и запуск процесса
     Subproc subproc = new Subproc(this, executable, options, envVars, consoleOutput);
     subproc.run(exitCode -> {
-      Log.d("ytgui", "Process completed with exit code: " + exitCode);
+      Log.d("ytgui", "Subproc callback with exit code: " + exitCode);
       if (exitCode == 0) {
         setResult(RESULT_OK);
       } else {

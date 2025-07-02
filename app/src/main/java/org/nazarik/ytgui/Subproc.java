@@ -51,7 +51,7 @@ public class Subproc {
         }
         pb.directory(((AppCompatActivity) context).getFilesDir());
         Process process = pb.start();
-        Log.d("ytgui", "Process started");
+        Log.d("ytgui", "Process started successfully");
         // Чтение stdout и stderr в консоль
         Thread stdoutThread = new Thread(() -> {
           try (BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
