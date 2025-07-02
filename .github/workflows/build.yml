@@ -30,7 +30,7 @@ jobs:
 
 # Сборка с отладочной информацией
     - name: Build with Gradle and Stacktrace
-        run: ./gradlew build --stacktrace
+        run: ./gradlew --stacktrace build
 
       - name: Upload build reports
         if: failure()  # Загружаем отчёты только при сбое
