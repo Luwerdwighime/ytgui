@@ -50,6 +50,18 @@ public class Subproc {
           }
         }
         pb.directory(((AppCompatActivity) context).getFilesDir());
+        // Проверка сети перед запуском
+        try {
+          Process ping = new ProcessBuilder("ping", "-c", "1", "github.com").start();
+          int pingExit = ping.waitFor();
+          if (pingExit != 0) {
+            Log.e("ytgui", "Network check failed: cannot reach github.com");
+            throw new Exception("Network unavailable");
+          }
+        } catch (Exception e) {
+          Log.e("ytgui", "Network check failed: " + e.getMessage());
+          throw new Exception("Network unavailable");
+        }
         Process process = pb.start();
         Log.d("ytgui", "Process started successfully");
         // Чтение stdout и stderr в консоль

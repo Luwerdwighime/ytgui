@@ -49,7 +49,7 @@ public class ConsoleActivity extends AppCompatActivity {
         continue;
       }
       if (inEnv && part.contains("'")) {
-        inEnv = false; // Завершаем обработку env, когда закрываем кавычки
+        inEnv = false;
         continue;
       }
       if (!inEnv && !part.isEmpty() && !part.equals(executable)) {
