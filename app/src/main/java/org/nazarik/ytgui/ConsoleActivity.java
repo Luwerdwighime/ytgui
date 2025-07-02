@@ -9,7 +9,8 @@ import java.util.ArrayList;
 public class ConsoleActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(setContentView(R.layout.activity_console);
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_console);
     TextView consoleOutput = findViewById(R.id.consoleOutput);
     String filesDir = getFilesDir().getAbsolutePath();
     String gitBinDir = filesDir + "/git-bin";
