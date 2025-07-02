@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
+import java.util.ArrayList;
 
 public class ConsoleActivity extends AppCompatActivity {
   @Override
@@ -34,15 +35,27 @@ public class ConsoleActivity extends AppCompatActivity {
       finish();
       return;
     }
-    Log.d("ytgui", "Received command: " + command);
-    // Подготовка данных для Subproc
+    Log.d("ytgui", "Received raw command: " + command);
+    // Ручное разбиение команды
     String executable = gitBinDir + "/git";
     String[] envVars = new String[]{"GIT_SSH_COMMAND=ssh -i " + sshKeyPath};
-    // Извлекаем только аргументы команды, убираем GIT_SSH_COMMAND
-    String[] commandParts = command.split("\\s+", 2);
-    String optionsStr = (commandParts.length > 1) ? commandParts[1] : "";
-    optionsStr = optionsStr.replaceAll("GIT_SSH_COMMAND='ssh -i " + sshKeyPath + "'\\s*", "").trim();
-    String[] options = optionsStr.isEmpty() ? new String[0] : optionsStr.split("\\s+");
+    ArrayList<String> optionsList = new ArrayList<>();
+    String[] parts = command.split("\\s+");
+    boolean skipEnv = false;
+    for (String part : parts) {
+      if (part.startsWith("GIT_SSH_COMMAND=")) {
+        skipEnv = true;
+        continue;
+      }
+      if (!skipEnv && !part.equals(executable)) {
+        continue;
+      }
+      skipEnv = false;
+      if (!part.isEmpty() && !part.equals(executable)) {
+        optionsList.add(part);
+      }
+    }
+    String[] options = optionsList.toArray(new String[0]);
     Log.d("ytgui", "Executable: " + executable + ", Options: " + String.join(" ", options));
     // Создание и запуск процесса
     Subproc subproc = new Subproc(this, executable, options, envVars, consoleOutput);
