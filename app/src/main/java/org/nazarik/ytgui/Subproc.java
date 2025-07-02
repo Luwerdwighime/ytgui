@@ -1,9 +1,11 @@
 package org.nazarik.ytgui;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +51,7 @@ public class Subproc {
         }
         pb.directory(((AppCompatActivity) context).getFilesDir());
         Process process = pb.start();
-        Log.d("ytgui", "Process started with PID: " + process.pid());
+        Log.d("ytgui", "Process started");
         // Чтение stdout и stderr в консоль
         Thread stdoutThread = new Thread(() -> {
           try (BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
