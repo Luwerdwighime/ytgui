@@ -21,6 +21,24 @@
       android:name="androidx.startup.InitializationProvider"
       android:authorities="${applicationId}.androidx-startup"
       tools:node="merge"/>
+    <provider
+      android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+      android:authorities="${applicationId}.profileinstaller"
+      android:directBootAware="true"
+      tools:node="merge">
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.SKIP_FILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.SAVE_PROFILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
+      </intent-filter>
+    </provider>
   </application>
 </manifest>
 
