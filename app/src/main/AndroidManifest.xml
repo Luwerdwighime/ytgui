@@ -4,6 +4,9 @@
   package="org.nazarik.ytgui">
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <permission
+    android:name="org.nazarik.ytgui.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    android:protectionLevel="signature"/>
   <application
     android:allowBackup="true"
     android:icon="@android:drawable/ic_menu_save"
@@ -39,6 +42,25 @@
         <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
       </intent-filter>
     </provider>
+    <receiver
+      android:name="androidx.profileinstaller.ProfileInstallReceiver"
+      android:directBootAware="true"
+      android:exported="true"
+      android:permission="org.nazarik.ytgui.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+      tools:node="merge">
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.SKIP_FILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.SAVE_PROFILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
+      </intent-filter>
+    </receiver>
   </application>
 </manifest>
 

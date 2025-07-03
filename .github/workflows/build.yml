@@ -31,7 +31,7 @@ jobs:
     - name: Clean Gradle cache
       run: ./gradlew clean
     - name: Build with Gradle and Stacktrace
-      run: ./gradlew build --stacktrace --info assembleDebug
+      run: ./gradlew build --warning-mode all --stacktrace --info assembleDebug
 
     - name: Upload build reports
       if: failure()  # Загружаем отчёты только при сбое
