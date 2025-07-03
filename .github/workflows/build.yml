@@ -28,6 +28,8 @@ jobs:
 #      run: ./gradlew clean assembleRelease
 
 # Сборка с отладочной информацией
+    - name: Clean Gradle cache
+      run: ./gradlew clean
     - name: Build with Gradle and Stacktrace
       run: ./gradlew build --stacktrace --info assembleDebug
 
