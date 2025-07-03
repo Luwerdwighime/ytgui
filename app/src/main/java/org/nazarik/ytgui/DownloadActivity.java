@@ -1,37 +1,51 @@
 package org.nazarik.ytgui;
+
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
+
 public class DownloadActivity extends AppCompatActivity {
+  private EditText urlInput;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    // Инициализация UI
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_download);
-    // Настройка элементов UI
-    EditText urlInput = findViewById(R.id.urlInput);
+
+    // Инициализация элементов UI
+    urlInput = findViewById(R.id.urlInput);
     Button pasteButton = findViewById(R.id.pasteButton);
-    Button downloadButton = findViewById(R.id.downloadButton);
-    // Настройка кнопки вставки
+    Button videoButton = findViewById(R.id.videoButton);
+    Button audioButton = findViewById(R.id.audioButton);
+    Button videoPlaylistButton = findViewById(R.id.videoPlaylistButton);
+    Button audioPlaylistButton = findViewById(R.id.audioPlaylistButton);
+
+    // Обработчик кнопки вставки URL из буфера
     pasteButton.setOnClickListener(v -> {
-      android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+      ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
       if (clipboard.hasPrimaryClip()) {
-        urlInput.setText(clipboard.getPrimaryClip().getItemAt(0).getText());
+        ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+        urlInput.setText(item.getText());
       }
     });
-    // Настройка кнопки скачивания
-    downloadButton.setOnClickListener(v -> {
-      String url = urlInput.getText().toString();
-      if (!url.isEmpty()) {
-        String filesDir = getFilesDir().getAbsolutePath();
-        String command = filesDir + "/git --version"; // Временная команда для теста
-        Intent intent = new Intent(this, ConsoleActivity.class);
-        intent.putExtra("command", command);
-        startActivity(intent);
-      }
-    });
+
+    // Обработчики кнопок скачивания
+    videoButton.setOnClickListener(v -> startConsoleActivity("yt-dlp --help " + urlInput.getText()));
+    audioButton.setOnClickListener(v -> startConsoleActivity("yt-dlp --help " + urlInput.getText()));
+    videoPlaylistButton.setOnClickListener(v -> startConsoleActivity("yt-dlp --help " + urlInput.getText()));
+    audioPlaylistButton.setOnClickListener(v -> startConsoleActivity("yt-dlp --help " + urlInput.getText()));
+  }
+
+  // Запуск ConsoleActivity с передачей команды
+  private void startConsoleActivity(String command) {
+    Intent intent = new Intent(this, ConsoleActivity.class);
+    intent.putExtra("command", command);
+    startActivity(intent);
   }
 }
 

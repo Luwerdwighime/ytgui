@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-    <!-- Кастомизация по желанию -->
+  <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <item name="colorPrimary">@android:color/holo_blue_dark</item>
+    <item name="colorPrimaryVariant">@android:color/holo_blue_light</item>
+    <item name="colorOnPrimary">@android:color/white</item>
   </style>
 </resources>
-

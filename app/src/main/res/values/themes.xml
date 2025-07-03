@@ -1,6 +1,4 @@
 <resources>
-  <style name="Theme.Ytgui" parent="Theme.Material3.DayNight.NoActionBar">
-    <!-- Customize your theme here if needed -->
-  </style>
+  <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar"/>
 </resources>
 

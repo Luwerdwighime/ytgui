@@ -1,9 +1,12 @@
 <resources>
-  <string name="app_name">Ytgui</string>
-  <string name="main_setup_text">Готовим git...</string>
-  <string name="url_hint">Введите URL видео</string>
-  <string name="paste_button">Вставить из буфера</string>
-  <string name="download_button">Скачать видео</string>
-  <string name="back_button">Назад</string>
-  <string name="console_placeholder">Консольный вывод...</string>
+  <string name="app_name">ytgui</string>
+  <string name="main_downloading">Качаем yt-dlp... ~500Мб</string>
+  <string name="download_url_hint">Введите URL</string>
+  <string name="download_paste">Вставить</string>
+  <string name="download_video">Скачать видео</string>
+  <string name="download_audio">Скачать аудио</string>
+  <string name="download_video_playlist">Скачать видео плейлист</string>
+  <string name="download_audio_playlist">Скачать аудио плейлист</string>
+  <string name="console_back">Назад</string>
 </resources>
+

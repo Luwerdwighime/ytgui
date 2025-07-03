@@ -1,40 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:orientation="vertical"
   android:padding="16dp">
   <LinearLayout
-    android:id="@+id/urlInputLayout"
-    android:layout_width="0dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent">
+    android:orientation="horizontal">
     <EditText
       android:id="@+id/urlInput"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
-      android:hint="@string/url_hint"
-      android:inputType="textUri"/>
+      android:hint="@string/download_url_hint"
+      android:singleLine="true"/>
     <Button
       android:id="@+id/pasteButton"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:drawableStart="@android:drawable/ic_menu_edit"
-      android:contentDescription="@string/paste_button"/>
+      android:text="@string/download_paste"/>
   </LinearLayout>
-  <Button
-    android:id="@+id/downloadButton"
-    android:layout_width="wrap_content"
+  <LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/download_button"
-    app:layout_constraintTop_toBottomOf="@id/urlInputLayout"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="16dp"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:orientation="horizontal"
+    android:layout_marginTop="16dp">
+    <Button
+      android:id="@+id/videoButton"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/download_video"/>
+    <ImageButton
+      android:id="@+id/videoSettings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@android:drawable/ic_menu_manage"/>
+  </LinearLayout>
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="8dp">
+    <Button
+      android:id="@+id/audioButton"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/download_audio"/>
+    <ImageButton
+      android:id="@+id/audioSettings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@android:drawable/ic_menu_manage"/>
+  </LinearLayout>
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="8dp">
+    <Button
+      android:id="@+id/videoPlaylistButton"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/download_video_playlist"/>
+    <ImageButton
+      android:id="@+id/videoPlaylistSettings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@android:drawable/ic_menu_manage"/>
+  </LinearLayout>
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="8dp">
+    <Button
+      android:id="@+id/audioPlaylistButton"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/download_audio_playlist"/>
+    <ImageButton
+      android:id="@+id/audioPlaylistSettings"
+      android:layout_width="wrap" android:layout_height="wrap_content"
+      android:src="@android:drawable/ic_menu_manage"/>
+  </LinearLayout>
+</LinearLayout>
 
