@@ -3,13 +3,14 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
-  android:padding="16dp">
+  android:padding="16dp"
+  android:background="#000000">
 
   <ScrollView
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    android:background="#111"
+    android:background="#111111"
     android:padding="8dp">
 
     <EditText
@@ -19,14 +20,13 @@
       android:background="@android:color/transparent"
       android:textColor="#00FF00"
       android:textSize="14sp"
-      android:inputType="textMultiLine"
-      android:gravity="start"
-      android:focusable="false"
+      android:inputType="none"
+      android:focusable="true"
       android:cursorVisible="false"
       android:scrollbars="vertical"
-      android:overScrollMode="always"
-      android:lineSpacingExtra="4dp"
-      android:textIsSelectable="true" />
+      android:lineSpacingExtra="6dp"
+      android:textIsSelectable="true"
+      android:overScrollMode="always" />
   </ScrollView>
 
   <Button
@@ -35,6 +35,8 @@
     android:layout_height="wrap_content"
     android:text="Продолжить"
     android:enabled="false"
-    android:layout_marginTop="8dp" />
+    android:layout_marginTop="12dp"
+    android:textColor="@android:color/white"
+    android:background="@android:color/holo_blue_dark" />
 </LinearLayout>
 

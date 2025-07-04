@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
     });
   }
 
+  // ⬇️ Скачивание и установка окружения
   private void downloadEnvironment() {
     try {
       URL url = new URL("https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v1.0.1.zip");
@@ -65,7 +66,11 @@ public class MainActivity extends Activity {
       File envDir = new File(getFilesDir(), "ytgui-env");
       unpacked.renameTo(envDir);
 
+      // ⛓️ Выставляем флаг выполнения на python
+      File pythonBin = new File(envDir, "bin/python");
+      pythonBin.setExecutable(true);
       log("Окружение установлено\n");
+
       runOnUiThread(() -> nextButton.setEnabled(true));
 
     } catch (Exception e) {
@@ -75,6 +80,7 @@ public class MainActivity extends Activity {
     }
   }
 
+  // 📦 Распаковка zip
   private void unzip(File zipFile, File targetDir) throws IOException {
     try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
       ZipEntry entry;
@@ -96,6 +102,7 @@ public class MainActivity extends Activity {
     }
   }
 
+  // ▶️ Запуск yt-dlp
   private void runYtDlp(String[] options) {
     if (options == null) return;
 
@@ -136,6 +143,7 @@ public class MainActivity extends Activity {
     }
   }
 
+  // 🖥️ Консоль с автоскроллом
   private void log(String text) {
     runOnUiThread(() -> {
       consoleTextArea.append(text);
