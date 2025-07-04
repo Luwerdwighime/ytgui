@@ -2,10 +2,12 @@
 package org.nazarik.ytgui;
 
 import android.app.Activity;
-import android.os.*;
+import android.os.Bundle;
 import android.widget.*;
+import android.content.Intent;
+import android.os.Process;
 import java.io.*;
-import java.util.Arrays;
+import java.util.*;
 import org.eclipse.jgit.api.Git;
 
 public class MainActivity extends Activity {
@@ -36,6 +38,7 @@ public class MainActivity extends Activity {
     });
   }
 
+  // 🔄 Синхронизация окружения
   private void syncEnvironment() {
     try {
       File envDir = new File(getFilesDir(), "ytgui-env");
@@ -57,14 +60,20 @@ public class MainActivity extends Activity {
     }
   }
 
+  // ⚙️ Запуск yt-dlp
   private void runYtDlp(String[] options) {
     try {
       File envDir = new File(getFilesDir(), "ytgui-env");
       File binDir = new File(envDir, "bin");
 
-      Process p = new ProcessBuilder("python3", "-m", "yt_dlp")
+      List<String> cmd = new ArrayList<>();
+      cmd.add("python3");
+      cmd.add("-m");
+      cmd.add("yt_dlp");
+      cmd.addAll(Arrays.asList(options));
+
+      java.lang.Process p = new ProcessBuilder(cmd)
         .directory(binDir)
-        .command("python3", "-m", "yt_dlp", options)
         .redirectErrorStream(true)
         .start();
 
@@ -88,6 +97,7 @@ public class MainActivity extends Activity {
     }
   }
 
+  // 🖥️ Лог в консоль с автоскроллом
   private void log(String text) {
     runOnUiThread(() -> {
       consoleTextArea.append(text);
