@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
     File envDir = new File(getFilesDir(), "ytgui-env");
 
     if (!envDir.exists()) {
-      log("Загружаем окружение yt-dlp ~500Мб...\n");
+      log("Загружаем окружение yt-dlp...\n");
       Thread t = new Thread(this::downloadEnvironment);
       t.start();
     } else {
@@ -39,7 +39,6 @@ public class MainActivity extends Activity {
     });
   }
 
-  // 🧩 Скачивание ZIP-архива и установка окружения
   private void downloadEnvironment() {
     try {
       URL url = new URL("https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v1.0.1.zip");
@@ -47,7 +46,7 @@ public class MainActivity extends Activity {
       connection.connect();
 
       InputStream input = new BufferedInputStream(connection.getInputStream());
-      File zipFile = new File(getFilesDir(), "ytgui-env.zip");
+      File zipFile = new File(getFilesDir(), "env.zip");
       FileOutputStream output = new FileOutputStream(zipFile);
 
       byte[] buffer = new byte[4096];
@@ -62,7 +61,7 @@ public class MainActivity extends Activity {
       unzip(zipFile, getFilesDir());
       zipFile.delete();
 
-      File unpacked = new File(getFilesDir(), "ytgui-env-1.0.0");
+      File unpacked = new File(getFilesDir(), "ytgui-env-1.0.1");
       File envDir = new File(getFilesDir(), "ytgui-env");
       unpacked.renameTo(envDir);
 
@@ -76,7 +75,6 @@ public class MainActivity extends Activity {
     }
   }
 
-  // 🔧 Распаковка ZIP-файла
   private void unzip(File zipFile, File targetDir) throws IOException {
     try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
       ZipEntry entry;
@@ -98,9 +96,8 @@ public class MainActivity extends Activity {
     }
   }
 
-  // 🎬 Запуск yt-dlp из окружения
   private void runYtDlp(String[] options) {
-    if (options == null) return; // просто ждём на экране, если ничего не передано
+    if (options == null) return;
 
     try {
       File envDir = new File(getFilesDir(), "ytgui-env");
@@ -139,7 +136,6 @@ public class MainActivity extends Activity {
     }
   }
 
-  // 📋 Лог в консоль с автоскроллом
   private void log(String text) {
     runOnUiThread(() -> {
       consoleTextArea.append(text);
