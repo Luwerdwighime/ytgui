@@ -10,6 +10,12 @@ import java.util.zip.*;
 import java.net.*;
 
 public class MainActivity extends Activity {
+  private static final String ENV_VERSION = "1.1.0";
+  private static final String ENV_ZIP_NAME = "ytgui-env-" + ENV_VERSION + ".zip";
+  private static final String ENV_FOLDER_NAME = "ytgui-env-" + ENV_VERSION;
+  private static final String ENV_FINAL_NAME = "ytgui-env";
+  private static final String ENV_URL = "https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v" + ENV_VERSION + ".zip";
+
   private Button nextButton;
   private EditText consoleTextArea;
 
@@ -23,10 +29,10 @@ public class MainActivity extends Activity {
 
     String[] options = getIntent().getStringArrayExtra("options");
 
-    File envDir = new File(getFilesDir(), "ytgui-env");
+    File envDir = new File(getFilesDir(), ENV_FINAL_NAME);
 
     if (!envDir.exists()) {
-      log("Загружаем окружение yt-dlp...\n");
+      log("Загружаем окружение yt-dlp " + ENV_VERSION + "...\n");
       Thread t = new Thread(this::downloadEnvironment);
       t.start();
     } else {
@@ -39,15 +45,14 @@ public class MainActivity extends Activity {
     });
   }
 
-  // ⬇️ Скачивание и установка окружения
   private void downloadEnvironment() {
     try {
-      URL url = new URL("https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v1.0.1.zip");
+      URL url = new URL(ENV_URL);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.connect();
 
       InputStream input = new BufferedInputStream(connection.getInputStream());
-      File zipFile = new File(getFilesDir(), "env.zip");
+      File zipFile = new File(getFilesDir(), ENV_ZIP_NAME);
       FileOutputStream output = new FileOutputStream(zipFile);
 
       byte[] buffer = new byte[4096];
@@ -62,11 +67,10 @@ public class MainActivity extends Activity {
       unzip(zipFile, getFilesDir());
       zipFile.delete();
 
-      File unpacked = new File(getFilesDir(), "ytgui-env-1.0.1");
-      File envDir = new File(getFilesDir(), "ytgui-env");
+      File unpacked = new File(getFilesDir(), ENV_FOLDER_NAME);
+      File envDir = new File(getFilesDir(), ENV_FINAL_NAME);
       unpacked.renameTo(envDir);
 
-      // ⛓️ Выставляем флаг выполнения на python
       File pythonBin = new File(envDir, "bin/python");
       pythonBin.setExecutable(true);
       log("Окружение установлено\n");
@@ -80,7 +84,6 @@ public class MainActivity extends Activity {
     }
   }
 
-  // 📦 Распаковка zip
   private void unzip(File zipFile, File targetDir) throws IOException {
     try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
       ZipEntry entry;
@@ -102,12 +105,11 @@ public class MainActivity extends Activity {
     }
   }
 
-  // ▶️ Запуск yt-dlp
   private void runYtDlp(String[] options) {
     if (options == null) return;
 
     try {
-      File envDir = new File(getFilesDir(), "ytgui-env");
+      File envDir = new File(getFilesDir(), ENV_FINAL_NAME);
       File pythonBin = new File(envDir, "bin/python");
 
       List<String> cmd = new ArrayList<>();
@@ -143,7 +145,6 @@ public class MainActivity extends Activity {
     }
   }
 
-  // 🖥️ Консоль с автоскроллом
   private void log(String text) {
     runOnUiThread(() -> {
       consoleTextArea.append(text);
