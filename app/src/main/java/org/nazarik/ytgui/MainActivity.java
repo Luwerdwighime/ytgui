@@ -10,7 +10,7 @@ import java.util.zip.*;
 import java.net.*;
 
 public class MainActivity extends Activity {
-  private static final String ENV_VERSION = "1.1.0";
+  private static final String ENV_VERSION = "1.1.1";
   private static final String ENV_ZIP_NAME = "ytgui-env-" + ENV_VERSION + ".zip";
   private static final String ENV_FOLDER_NAME = "ytgui-env-" + ENV_VERSION;
   private static final String ENV_FINAL_NAME = "ytgui-env";
@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
       }
       output.close();
       input.close();
-      log("ZIP-файл загружен\n");
+      log("ZIP-файл загружен. Распаковываем...\n");
 
       unzip(zipFile, getFilesDir());
       zipFile.delete();
@@ -70,13 +70,9 @@ public class MainActivity extends Activity {
       File unpacked = new File(getFilesDir(), ENV_FOLDER_NAME);
       File envDir = new File(getFilesDir(), ENV_FINAL_NAME);
       unpacked.renameTo(envDir);
-
-      File pythonBin = new File(envDir, "bin/python");
-      pythonBin.setExecutable(true);
       log("Окружение установлено\n");
 
       runOnUiThread(() -> nextButton.setEnabled(true));
-
     } catch (Exception e) {
       runOnUiThread(() ->
         Toast.makeText(this, "Ошибка при скачивании окружения", Toast.LENGTH_LONG).show());

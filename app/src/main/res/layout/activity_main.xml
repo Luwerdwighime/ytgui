@@ -37,6 +37,6 @@
     android:enabled="false"
     android:layout_marginTop="12dp"
     android:textColor="@android:color/white"
-    android:background="@android:color/holo_blue_dark" />
+    android:background="@drawable/button_selector" />
 </LinearLayout>
 
