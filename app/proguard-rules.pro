@@ -3,3 +3,8 @@
 -dontwarn androidx.*
 -dontwarn org.eclipse.jgit.**
 
+# yt-dlp — не трогать логику Python
+-keep class * {
+  public *;
+}
+

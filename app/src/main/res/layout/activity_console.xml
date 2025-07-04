@@ -1,25 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- хакерская консоль + кнопка назад -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
-  android:padding="16dp">
-  <TextView
-    android:id="@+id/consoleOutput"
+  android:padding="8dp">
+
+  <!-- консоль -->
+  <ScrollView
+    android:id="@+id/consoleScroll"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    android:background="#000000"
-    android:textColor="#00FF00"
-    android:padding="8dp"
-    android:scrollbars="vertical"
-    android:textIsSelectable="true"/>
+    android:background="#000000">
+
+    <TextView
+      android:id="@+id/consoleOutput"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="#00FF00"
+      android:textSize="14sp"
+      android:padding="4dp"
+      android:textIsSelectable="true" />
+  </ScrollView>
+
+  <!-- кнопка назад -->
   <Button
     android:id="@+id/backButton"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/console_back"
-    android:enabled="false"/>
+    android:text="⬅ Назад"
+    android:enabled="false"
+    android:layout_marginTop="8dp" />
 </LinearLayout>
 

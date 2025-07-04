@@ -1,16 +1,18 @@
+// app/build.gradle — основной файл сборки приложения
 apply plugin: 'com.android.application'
 
 android {
-  compileSdk 34
-  namespace 'org.nazarik.ytgui'
+  compileSdkVersion 33
+
   defaultConfig {
     applicationId "org.nazarik.ytgui"
-    minSdk 28
-    targetSdk 34
+    minSdkVersion 21
+    targetSdkVersion 33
     versionCode 1
     versionName "1.0"
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    multiDexEnabled true
   }
+
   signingConfigs {
     release {
       storeFile file('keystore.jks')
@@ -19,25 +21,26 @@ android {
       keyPassword 'ytgui123'
     }
   }
+
   buildTypes {
     release {
+      signingConfig signingConfigs.release
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-      signingConfig signingConfigs.release
     }
   }
+
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
 }
+
 dependencies {
-  implementation 'androidx.appcompat:appcompat:1.7.0'
-  implementation 'com.google.android.material:material:1.12.0'
-  implementation 'org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r'
-  implementation 'androidx.lifecycle:lifecycle-process:2.8.0'
-  implementation 'androidx.startup:startup-runtime:1.1.1'
-  implementation 'androidx.profileinstaller:profileinstaller:1.3.1'
-  implementation 'androidx.core:core:1.13.0'
+  implementation 'org.eclipse.jgit:org.eclipse.jgit:6.6.1.202309021850-r'
+  implementation 'androidx.appcompat:appcompat:1.6.1'
+  implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+  implementation 'com.google.android.material:material:1.9.0'
+  implementation 'androidx.multidex:multidex:2.0.1'
 }
 

@@ -1,100 +1,111 @@
 package org.nazarik.ytgui;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.method.ScrollingMovementMethod;
-import android.widget.Button;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
+import android.widget.ScrollView;
+import android.widget.Button;
+import android.content.Intent;
+import android.view.View;
+import android.widget.Toast;
 
-public class ConsoleActivity extends AppCompatActivity {
+import java.io.*;
+import java.util.*;
+
+public class ConsoleActivity extends Activity {
+
   private TextView consoleOutput;
+  private ScrollView consoleScroll;
   private Button backButton;
-  private final Handler handler = new Handler(Looper.getMainLooper());
+
+  private final List<String> stderrBuffer = Collections.synchronizedList(new ArrayList<>());
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_console);
 
-    // Инициализация UI
     consoleOutput = findViewById(R.id.consoleOutput);
+    consoleScroll = findViewById(R.id.consoleScroll);
     backButton = findViewById(R.id.backButton);
-    consoleOutput.setMovementMethod(new ScrollingMovementMethod());
 
-    // Обработчик кнопки "Назад"
+    backButton.setEnabled(false);
     backButton.setOnClickListener(v -> {
       startActivity(new Intent(this, DownloadActivity.class));
       finish();
     });
 
-    // Получение команды из Intent
-    String command = getIntent().getStringExtra("command");
-    if (command != null) {
-      executeCommand(command);
-    }
+    ArrayList<String> options = getIntent().getStringArrayListExtra("options");
+    runYtdlp(options);
   }
 
-  // Выполнение команды в окружении ytgui-env
-  private void executeCommand(String command) {
+  private void runYtdlp(List<String> options) {
     new Thread(() -> {
+      int exitCode = -1;
+
       try {
-        File envDir = new File(getFilesDir() + "/ytgui-env");
-        String[] cmd = {envDir + "/bin/python", "-c", "import sys; sys.path.append('" + envDir + "'); import yt_dlp; " + command};
+        File envDir = new File(getFilesDir(), "ytgui-env");
+        File pythonExe = new File(envDir, "bin/python");
 
-        Process process = new ProcessBuilder(cmd)
-          .directory(envDir)
-          .start();
+        List<String> args = new ArrayList<>();
+        args.add(pythonExe.getAbsolutePath());
+        args.add("-m");
+        args.add("yt_dlp");
+        args.addAll(options);
 
-        // Захват stdout
+        ProcessBuilder pb = new ProcessBuilder(args);
+        pb.directory(envDir);
+        Process process = pb.start();
+
+        // stdout
         new Thread(() -> {
           try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
-              String finalLine = line;
-              handler.post(() -> appendConsole(finalLine));
+              appendLine(line + "\n");
             }
           } catch (Exception e) {
-            e.printStackTrace();
+            appendLine("[stdout error] " + e.getMessage() + "\n");
           }
         }).start();
 
-        // Захват stderr
+        // stderr
         new Thread(() -> {
           try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
-              String finalLine = line;
-              handler.post(() -> appendConsole(finalLine));
+              stderrBuffer.add(line); // сохраняем для итогового сообщения
+              appendLine("[stderr] " + line + "\n");
             }
           } catch (Exception e) {
-            e.printStackTrace();
+            appendLine("[stderr error] " + e.getMessage() + "\n");
           }
         }).start();
 
-        // Ожидание завершения процесса
-        process.waitFor();
-        handler.post(() -> backButton.setEnabled(true));
+        exitCode = process.waitFor();
+
       } catch (Exception e) {
-        e.printStackTrace();
-        handler.post(() -> appendConsole("Ошибка: " + e.getMessage()));
-        handler.post(() -> backButton.setEnabled(true));
+        appendLine("Ошибка запуска: " + e.getMessage() + "\n");
+      } finally {
+        final int resultCode = exitCode;
+        runOnUiThread(() -> {
+          backButton.setEnabled(true);
+
+          if (resultCode != 0) {
+            String lastError = stderrBuffer.isEmpty() ? "Неизвестная ошибка" : stderrBuffer.get(stderrBuffer.size() - 1);
+            String msg = "⚠ yt-dlp завершился с ошибкой (" + resultCode + "): " + lastError;
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+          }
+        });
       }
     }).start();
   }
 
-  // Добавление текста в консоль с прокруткой вниз
-  private void appendConsole(String text) {
-    consoleOutput.append(text + "\n");
-    int scrollAmount = consoleOutput.getLayout().getLineTop(consoleOutput.getLineCount()) - consoleOutput.getHeight();
-    if (scrollAmount > 0) {
-      consoleOutput.scrollTo(0, scrollAmount);
-    }
+  private void appendLine(String text) {
+    runOnUiThread(() -> {
+      consoleOutput.append(text);
+      consoleScroll.post(() -> consoleScroll.fullScroll(View.FOCUS_DOWN));
+    });
   }
 }
 
