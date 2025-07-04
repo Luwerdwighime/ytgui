@@ -5,10 +5,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.*;
 import android.content.Intent;
-import android.os.Process;
 import java.io.*;
 import java.util.*;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.transport.*;
+import com.jcraft.jsch.*;
 
 public class MainActivity extends Activity {
   private Button nextButton;
@@ -38,45 +39,71 @@ public class MainActivity extends Activity {
     });
   }
 
-  // 🔄 Синхронизация окружения
+  // 🔄 Клонирование или обновление окружения по SSH
   private void syncEnvironment() {
     try {
       File envDir = new File(getFilesDir(), "ytgui-env");
+
+      // Настройка SSH без фразы
+      SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
+        @Override
+        protected void configure(OpenSshConfig.Host host, Session session) {}
+
+        @Override
+        protected JSch createDefaultJSch(FS fs) throws JSchException {
+          JSch jsch = super.createDefaultJSch(fs);
+          // ключ необязателен для публичной репы
+          return jsch;
+        }
+      };
+
+      TransportConfigCallback transportConfigCallback = transport -> {
+        if (transport instanceof SshTransport) {
+          ((SshTransport) transport).setSshSessionFactory(sshSessionFactory);
+        }
+      };
+
       if (!envDir.exists()) {
         Git.cloneRepository()
-          .setURI("https://github.com/Luwerdwighime/ytgui-env")
+          .setURI("ssh://git@github.com/Luwerdwighime/ytgui-env.git")
           .setDirectory(envDir)
           .setDepth(1)
+          .setTransportConfigCallback(transportConfigCallback)
           .call();
         log("Клонирование завершено\n");
       } else {
-        Git.open(envDir).pull().call();
+        Git.open(envDir)
+          .pull()
+          .setTransportConfigCallback(transportConfigCallback)
+          .call();
         log("Окружение обновлено\n");
       }
+
       runOnUiThread(() -> nextButton.setEnabled(true));
+
     } catch (Exception e) {
       runOnUiThread(() -> Toast.makeText(this, "Сеть отсутствует", Toast.LENGTH_LONG).show());
-      log("Ошибка при загрузке окружения\n");
+      log("Ошибка клонирования: " + e.getMessage() + "\n");
     }
   }
 
-  // ⚙️ Запуск yt-dlp
+  // ⚙️ Запуск yt-dlp через питон внутри окружения
   private void runYtDlp(String[] options) {
     try {
       File envDir = new File(getFilesDir(), "ytgui-env");
-      File binDir = new File(envDir, "bin");
+      File python = new File(envDir, "bin/python");
 
       List<String> cmd = new ArrayList<>();
-      cmd.add("python3");
+      cmd.add(python.getAbsolutePath());
       cmd.add("-m");
       cmd.add("yt_dlp");
       cmd.addAll(Arrays.asList(options));
 
-      java.lang.Process p = new ProcessBuilder(cmd)
-        .directory(binDir)
-        .redirectErrorStream(true)
-        .start();
+      ProcessBuilder pb = new ProcessBuilder(cmd);
+      pb.directory(envDir);
+      pb.redirectErrorStream(true);
 
+      java.lang.Process p = pb.start();
       BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
       String line;
       while ((line = reader.readLine()) != null) {
@@ -97,7 +124,7 @@ public class MainActivity extends Activity {
     }
   }
 
-  // 🖥️ Лог в консоль с автоскроллом
+  // 🖥️ Печать в консоль с автоскроллом
   private void log(String text) {
     runOnUiThread(() -> {
       consoleTextArea.append(text);
