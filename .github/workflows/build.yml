@@ -24,21 +24,21 @@ jobs:
       run: chmod +x ./gradlew
 
 # Обычная сборка
-#    - name: Build Release APK
-#      run: ./gradlew clean assembleRelease
+    - name: Build Release APK
+      run: ./gradlew clean assembleRelease
 
 # Сборка с отладочной информацией
-    - name: Clean Gradle cache
-      run: ./gradlew clean
-    - name: Build with Gradle and Stacktrace
-      run: ./gradlew build --warning-mode all --stacktrace --info --debug assembleDebug
+#    - name: Clean Gradle cache
+#      run: ./gradlew clean
+#    - name: Build with Gradle and Stacktrace
+#      run: ./gradlew build --warning-mode all --stacktrace --info --debug assembleDebug
 
-    - name: Upload build reports
-      if: failure()  # Загружаем отчёты только при сбое
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-reports
-        path: app/build/reports
+#    - name: Upload build reports
+#      if: failure()  # Загружаем отчёты только при сбое
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: build-reports
+#        path: app/build/reports
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
