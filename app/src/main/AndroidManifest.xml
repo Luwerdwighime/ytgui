@@ -11,7 +11,7 @@
     android:label="YT GUI"
     android:icon="@android:drawable/ic_menu_save"
     android:supportsRtl="true"
-    android:theme="@style/Theme.Ytgui">
+    android:theme="@style/Theme.YtGui">
 
     <!-- главная точка входа -->
     <activity
