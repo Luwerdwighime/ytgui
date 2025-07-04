@@ -1,124 +1,66 @@
-<!-- экран DownloadActivity: поле ввода + 4 кнопки и мини-шестерёнки -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- res/layout/activity_download.xml -->
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:padding="16dp">
+  android:padding="8dp">
 
-  <!-- поле ввода URL -->
   <EditText
     android:id="@+id/urlInput"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:hint="Введите URL"
-    android:inputType="textUri"
-    android:textSize="16sp" />
+    android:hint="@string/enter_url"/>
 
-  <!-- кнопка вставки из буфера -->
   <Button
     android:id="@+id/pasteButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="📋 Вставить"
-    android:layout_marginTop="8dp" />
+    android:text="@string/paste"/>
 
-  <!-- блок кнопок скачивания -->
   <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginTop="24dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <!-- видео -->
-    <LinearLayout
-      android:layout_width="match_parent"
+    <LinearLayout android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal">
-
-      <Button
-        android:id="@+id/videoButton"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="🎬 Видео" />
-
-      <ImageButton
-        android:id="@+id/videoGear"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_manage"
-        android:contentDescription="Настройки"
-        android:background="?attr/selectableItemBackgroundBorderless" />
+      <Button android:id="@+id/buttonVideo" android:layout_weight="1"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:text="@string/download_video"/>
+      <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:text="⚙️"/>
     </LinearLayout>
 
-    <!-- аудио -->
-    <LinearLayout
-      android:layout_width="match_parent"
+    <LinearLayout android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:layout_marginTop="8dp">
-
-      <Button
-        android:id="@+id/audioButton"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="🎧 Аудио" />
-
-      <ImageButton
-        android:id="@+id/audioGear"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_manage"
-        android:contentDescription="Настройки"
-        android:background="?attr/selectableItemBackgroundBorderless" />
+      android:orientation="horizontal">
+      <Button android:id="@+id/buttonAudio" android:layout_weight="1"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:text="@string/download_audio"/>
+      <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:text="⚙️"/>
     </LinearLayout>
 
-    <!-- видео плейлист -->
-    <LinearLayout
-      android:layout_width="match_parent"
+    <LinearLayout android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:layout_marginTop="8dp">
-
-      <Button
-        android:id="@+id/videoListButton"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="📺 Видео плейлист" />
-
-      <ImageButton
-        android:id="@+id/videoListGear"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_manage"
-        android:contentDescription="Настройки"
-        android:background="?attr/selectableItemBackgroundBorderless" />
+      android:orientation="horizontal">
+      <Button android:id="@+id/buttonPlaylistVideo" android:layout_weight="1"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:text="@string/download_video_playlist"/>
+      <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:text="⚙️"/>
     </LinearLayout>
 
-    <!-- аудио плейлист -->
-    <LinearLayout
-      android:layout_width="match_parent"
+    <LinearLayout android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:layout_marginTop="8dp">
-
-      <Button
-        android:id="@+id/audioListButton"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="📁 Аудио плейлист" />
-
-      <ImageButton
-        android:id="@+id/audioListGear"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_manage"
-        android:contentDescription="Настройки"
-        android:background="?attr/selectableItemBackgroundBorderless" />
+      android:orientation="horizontal">
+      <Button android:id="@+id/buttonPlaylistAudio" android:layout_weight="1"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:text="@string/download_audio_playlist"/>
+      <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:text="⚙️"/>
     </LinearLayout>
   </LinearLayout>
 </LinearLayout>

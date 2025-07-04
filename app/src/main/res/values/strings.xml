@@ -1,12 +1,11 @@
 <resources>
   <string name="app_name">YT GUI</string>
-  <string name="main_status">Качаем yt-dlp... ~500Мб</string>
+  <string name="next">Далее</string>
   <string name="paste">📋 Вставить</string>
-  <string name="video">🎬 Видео</string>
-  <string name="audio">🎧 Аудио</string>
-  <string name="video_list">📺 Видео плейлист</string>
-  <string name="audio_list">📁 Аудио плейлист</string>
-  <string name="back">⬅ Назад</string>
+  <string name="download_video">🎬 Видео</string>
+  <string name="download_audio">🎧 Аудио</string>
+  <string name="download_video_playlist">📺 Видео плейлист</string>
+  <string name="download_audio_playlist">📁 Аудио плейлист</string>
   <string name="enter_url">Введите URL</string>
   <string name="toast_empty_url">Введите URL</string>
 </resources>

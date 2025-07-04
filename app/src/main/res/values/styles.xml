@@ -1,4 +1,8 @@
+<!-- res/values/styles.xml -->
 <resources>
-  <style name="AppTheme" parent="Theme.Ytgui" />
+  <style name="EditTextStyle">
+    <item name="android:background">@android:color/transparent</item>
+    <item name="android:textColor">@android:color/holo_green_light</item>
+    <item name="android:layout_margin">4dp</item>
+  </style>
 </resources>
-
