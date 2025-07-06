@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
     File envDir = new File(getFilesDir(), ENV_FINAL_NAME);
 
     if (!envDir.exists()) {
-      log("Загружаем окружение yt-dlp " + ENV_VERSION + "...\n");
+      log("Загружаем окружение yt-dlp " + ENV_VERSION + "(~146Мб)...\n");
       Thread t = new Thread(this::downloadEnvironment);
       t.start();
     } else {
