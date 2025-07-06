@@ -29,7 +29,7 @@ public class DownloadActivity extends Activity {
       }
     });
 
-    setupDownloadButton(R.id.buttonVideo, new String[]{"--help", "1"}, urlInput);
+    setupDownloadButton(R.id.buttonVideo, new String[], urlInput);
     setupDownloadButton(R.id.buttonAudio, new String[]{"--help", "2"}, urlInput);
     setupDownloadButton(R.id.buttonPlaylistVideo, new String[]{"--help", "3"}, urlInput);
     setupDownloadButton(R.id.buttonPlaylistAudio, new String[]{"--help", "4"}, urlInput);
@@ -43,7 +43,8 @@ public class DownloadActivity extends Activity {
         Toast.makeText(this, getString(R.string.toast_empty_url), Toast.LENGTH_SHORT).show();
         return;
       }
-      String[] options = new String[]{flags[0], flags[1], url};
+      String[] options = Stream.concat(Arrays.stream(flags), Stream.of(url))
+        .toArray(String[]::new);
       Intent i = new Intent(this, MainActivity.class);
       i.putExtra("options", options);
       Toast.makeText(this, String.join(" ", options), Toast.LENGTH_LONG).show();
