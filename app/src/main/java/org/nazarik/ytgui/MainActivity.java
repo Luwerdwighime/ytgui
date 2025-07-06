@@ -70,6 +70,8 @@ public class MainActivity extends Activity {
       File unpacked = new File(getFilesDir(), ENV_FOLDER_NAME);
       File envDir = new File(getFilesDir(), ENV_FINAL_NAME);
       unpacked.renameTo(envDir);
+      File python313 = new File(envDir, "bin/python3.13");
+      python313.setExecutable(true);
       log("Окружение установлено\n");
 
       runOnUiThread(() -> nextButton.setEnabled(true));
