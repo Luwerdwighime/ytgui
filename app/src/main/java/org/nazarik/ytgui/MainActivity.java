@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
 
     try {
       File envDir = new File(getFilesDir(), ENV_FINAL_NAME);
-      File pythonBin = new File(envDir, "bin/python");
+      File pythonBin = new File(envDir, "bin/python3.13");
 
       List<String> cmd = new ArrayList<>();
       cmd.add(pythonBin.getAbsolutePath());
