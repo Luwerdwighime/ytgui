@@ -10,7 +10,7 @@ import java.util.zip.*;
 import java.net.*;
 
 public class MainActivity extends Activity {
-  private static final String ENV_VERSION = "1.1.1";
+  private static final String ENV_VERSION = "1.1.2";
   private static final String ENV_ZIP_NAME = "ytgui-env-" + ENV_VERSION + ".zip";
   private static final String ENV_FOLDER_NAME = "ytgui-env-" + ENV_VERSION;
   private static final String ENV_FINAL_NAME = "ytgui-env";
@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
     File envDir = new File(getFilesDir(), ENV_FINAL_NAME);
 
     if (!envDir.exists()) {
-      log("Загружаем окружение yt-dlp " + ENV_VERSION + "(~146Мб)...\n");
+      log("Загружаем окружение yt-dlp " + ENV_VERSION + " (~146Мб)...\n");
       Thread t = new Thread(this::downloadEnvironment);
       t.start();
     } else {
