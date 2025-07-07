@@ -1,57 +1,82 @@
-// DownloadActivity.java
 package org.nazarik.ytgui;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
+import android.content.Intent;
+import java.util.*;
 
 public class DownloadActivity extends Activity {
+  private EditText urlInput;
+  private Button buttonVideo;
+  private Button buttonAudio;
+  private Button buttonPlaylistVideo;
+  private Button buttonPlaylistAudio;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_download);
 
-    EditText urlInput = findViewById(R.id.urlInput);
-    Button pasteButton = findViewById(R.id.pasteButton);
+    urlInput = findViewById(R.id.urlInput);
+    buttonVideo = findViewById(R.id.buttonVideo);
+    buttonAudio = findViewById(R.id.buttonAudio);
+    buttonPlaylistVideo = findViewById(R.id.buttonPlaylistVideo);
+    buttonPlaylistAudio = findViewById(R.id.buttonPlaylistAudio);
 
-    pasteButton.setOnClickListener(v -> {
-      ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-      if (cm.hasPrimaryClip()) {
-        ClipData clip = cm.getPrimaryClip();
-        if (clip != null && clip.getItemCount() > 0) {
-          urlInput.setText(clip.getItemAt(0).getText().toString());
-        }
-      }
-    });
-
-    setupDownloadButton(R.id.buttonVideo, new String[], urlInput);
-    setupDownloadButton(R.id.buttonAudio, new String[]{"--help", "2"}, urlInput);
-    setupDownloadButton(R.id.buttonPlaylistVideo, new String[]{"--help", "3"}, urlInput);
-    setupDownloadButton(R.id.buttonPlaylistAudio, new String[]{"--help", "4"}, urlInput);
+    setupDownloadButton(buttonVideo, getVideoOptions(), urlInput);
+    setupDownloadButton(buttonAudio, getAudioOptions(), urlInput);
+    setupDownloadButton(buttonPlaylistVideo, getPlaylistVideoOptions(), urlInput);
+    setupDownloadButton(buttonPlaylistAudio, getPlaylistAudioOptions(), urlInput);
   }
 
-  private void setupDownloadButton(int btnId, String[] flags, EditText urlInput) {
-    Button btn = findViewById(btnId);
-    btn.setOnClickListener(v -> {
-      String url = urlInput.getText().toString();
+  private void setupDownloadButton(Button button, String[] options, EditText input) {
+    button.setOnClickListener(v -> {
+      String url = input.getText().toString().trim();
       if (url.isEmpty()) {
-        Toast.makeText(this, getString(R.string.toast_empty_url), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Введите URL", Toast.LENGTH_SHORT).show();
         return;
       }
 
-      String[] options = Stream.concat(Arrays.stream(flags), Stream.of(url))
-        .toArray(String[]::new);
+      ArrayList<String> args = new ArrayList<>();
+      if (options != null && options.length > 0) {
+        Collections.addAll(args, options);
+      }
+      args.add(url); // URL всегда последний
 
-      Intent i = new Intent(this, MainActivity.class);
-      i.putExtra("options", options);
-      Toast.makeText(this, String.join(" ", options), Toast.LENGTH_LONG).show();
-      startActivity(i);
+      Intent intent = new Intent(this, MainActivity.class);
+      intent.putExtra("options", args.toArray(new String[0]));
+      startActivity(intent);
     });
+  }
+
+  private String[] getVideoOptions() {
+    return new String[] {
+      "--format", "bestvideo"
+    };
+  }
+
+  private String[] getAudioOptions() {
+    return new String[] {
+      "--extract-audio",
+      "--audio-format", "mp3"
+    };
+  }
+
+  private String[] getPlaylistVideoOptions() {
+    return new String[] {
+      "--yes-playlist",
+      "--format", "bestaudio+bestvideo"
+    };
+  }
+
+  private String[] getPlaylistAudioOptions() {
+    return new String[] {
+      "--yes-playlist",
+      "--format", "bestaudio",
+      "--extract-audio",
+      "--audio-format", "mp3"
+    };
   }
 }
 
