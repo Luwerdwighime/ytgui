@@ -1,67 +1,134 @@
-<!-- res/layout/activity_download.xml -->
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:padding="8dp">
-
-  <EditText
-    android:id="@+id/urlInput"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="@string/enter_url"/>
-
-  <Button
-    android:id="@+id/pasteButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/paste"/>
+  android:padding="16dp">
 
   <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout android:layout_width="match_parent"
+    <!-- Поле ввода + кнопка вставить -->
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal">
-      <Button android:id="@+id/buttonVideo" android:layout_weight="1"
-        android:layout_width="0dp" android:layout_height="wrap_content"
-        android:text="@string/download_video"/>
-      <Button android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:text="⚙️"/>
+      android:layout_marginBottom="16dp">
+
+      <EditText
+        android:id="@+id/urlInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Вставьте ссылку"
+        android:inputType="textUri" />
+
+      <Button
+        android:id="@+id/buttonPaste"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⎘"
+        android:layout_marginStart="8dp"
+        android:minWidth="48dp"
+        android:textSize="18sp" />
     </LinearLayout>
 
-    <LinearLayout android:layout_width="match_parent"
+    <!-- Первая строка: Видео + ⚙ -->
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal">
-      <Button android:id="@+id/buttonAudio" android:layout_weight="1"
-        android:layout_width="0dp" android:layout_height="wrap_content"
-        android:text="@string/download_audio"/>
-      <Button android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:text="⚙️"/>
+      android:layout_marginBottom="12dp">
+
+      <Button
+        android:id="@+id/buttonVideo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Скачать видео" />
+
+      <Button
+        android:id="@+id/buttonVideoSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚙"
+        android:layout_marginStart="8dp"
+        android:minWidth="48dp"
+        android:textSize="18sp" />
     </LinearLayout>
 
-    <LinearLayout android:layout_width="match_parent"
+    <!-- Вторая строка: Аудио + ⚙ -->
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal">
-      <Button android:id="@+id/buttonPlaylistVideo" android:layout_weight="1"
-        android:layout_width="0dp" android:layout_height="wrap_content"
-        android:text="@string/download_video_playlist"/>
-      <Button android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:text="⚙️"/>
+      android:layout_marginBottom="12dp">
+
+      <Button
+        android:id="@+id/buttonAudio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Скачать аудио" />
+
+      <Button
+        android:id="@+id/buttonAudioSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚙"
+        android:layout_marginStart="8dp"
+        android:minWidth="48dp"
+        android:textSize="18sp" />
     </LinearLayout>
 
-    <LinearLayout android:layout_width="match_parent"
+    <!-- Третья строка: Плейлист-видео + ⚙ -->
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal">
-      <Button android:id="@+id/buttonPlaylistAudio" android:layout_weight="1"
-        android:layout_width="0dp" android:layout_height="wrap_content"
-        android:text="@string/download_audio_playlist"/>
-      <Button android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:text="⚙️"/>
+      android:layout_marginBottom="12dp">
+
+      <Button
+        android:id="@+id/buttonPlaylistVideo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Плейлист: видео" />
+
+      <Button
+        android:id="@+id/buttonPlaylistVideoSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚙"
+        android:layout_marginStart="8dp"
+        android:minWidth="48dp"
+        android:textSize="18sp" />
     </LinearLayout>
+
+    <!-- Четвёртая строка: Плейлист-аудио + ⚙ -->
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <Button
+        android:id="@+id/buttonPlaylistAudio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Плейлист: аудио" />
+
+      <Button
+        android:id="@+id/buttonPlaylistAudioSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚙"
+        android:layout_marginStart="8dp"
+        android:minWidth="48dp"
+        android:textSize="18sp" />
+    </LinearLayout>
+
   </LinearLayout>
-</LinearLayout>
+</ScrollView>
 
