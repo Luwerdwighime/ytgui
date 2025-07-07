@@ -43,8 +43,10 @@ public class DownloadActivity extends Activity {
         Toast.makeText(this, getString(R.string.toast_empty_url), Toast.LENGTH_SHORT).show();
         return;
       }
+
       String[] options = Stream.concat(Arrays.stream(flags), Stream.of(url))
         .toArray(String[]::new);
+
       Intent i = new Intent(this, MainActivity.class);
       i.putExtra("options", options);
       Toast.makeText(this, String.join(" ", options), Toast.LENGTH_LONG).show();
