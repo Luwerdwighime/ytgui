@@ -10,7 +10,7 @@ import java.util.zip.*;
 import java.net.*;
 
 public class MainActivity extends Activity {
-  private static final String ENV_VERSION = "1.1.2";
+  private static final String ENV_VERSION = "1.2.2";
   private static final String ENV_ZIP_NAME = "ytgui-env-" + ENV_VERSION + ".zip";
   private static final String ENV_FOLDER_NAME = "ytgui-env-" + ENV_VERSION;
   private static final String ENV_FINAL_NAME = "ytgui-env";
