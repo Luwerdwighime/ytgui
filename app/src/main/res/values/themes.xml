@@ -1,6 +1,9 @@
-<!-- res/values/themes.xml -->
+<!-- файл: app/src/main/res/values/themes.xml -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <style name="Theme.YtGui" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-    <item name="android:colorAccent">@android:color/holo_green_light</item>
+  <style name="Theme.YTGUI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <item name="android:windowBackground">@color/white</item>
+    <item name="android:statusBarColor">@color/black</item>
+    <item name="android:navigationBarColor">@color/black</item>
   </style>
 </resources>
+

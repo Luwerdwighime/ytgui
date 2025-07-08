@@ -1,134 +1,116 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- файл: app/src/main/res/layout/activity_download.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:padding="16dp">
+  android:fillViewport="true"
+  android:padding="8dp">
 
   <LinearLayout
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <!-- Поле ввода + кнопка вставить -->
-    <LinearLayout
-      android:orientation="horizontal"
+    <!-- Поле ввода URL -->
+    <EditText
+      android:id="@+id/urlInput"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="16dp">
+      android:hint="Введите URL"
+      android:inputType="textUri"
+      android:textSize="14sp"/>
 
-      <EditText
-        android:id="@+id/urlInput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:hint="Вставьте ссылку"
-        android:inputType="textUri" />
+    <!-- Кнопка вставки -->
+    <Button
+      android:id="@+id/pasteBtn"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="📋"
+      android:layout_marginBottom="16dp"/>
 
-      <Button
-        android:id="@+id/buttonPaste"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="⎘"
-        android:layout_marginStart="8dp"
-        android:minWidth="48dp"
-        android:textSize="18sp" />
-    </LinearLayout>
-
-    <!-- Первая строка: Видео + ⚙ -->
+    <!-- Кнопки действия -->
+    <!-- Скачать видео -->
     <LinearLayout
-      android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="12dp">
+      android:orientation="horizontal"
+      android:layout_marginBottom="8dp">
 
       <Button
-        android:id="@+id/buttonVideo"
+        android:id="@+id/btnVideo"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Скачать видео" />
+        android:layout_height="wrap_content"
+        android:text="Скачать видео"/>
 
       <Button
-        android:id="@+id/buttonVideoSettings"
+        android:id="@+id/gearVideo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚙"
-        android:layout_marginStart="8dp"
-        android:minWidth="48dp"
-        android:textSize="18sp" />
+        android:text="⚙"/>
     </LinearLayout>
 
-    <!-- Вторая строка: Аудио + ⚙ -->
+    <!-- Скачать аудио -->
     <LinearLayout
-      android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="12dp">
+      android:orientation="horizontal"
+      android:layout_marginBottom="8dp">
 
       <Button
-        android:id="@+id/buttonAudio"
+        android:id="@+id/btnAudio"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Скачать аудио" />
+        android:layout_height="wrap_content"
+        android:text="Скачать аудио"/>
 
       <Button
-        android:id="@+id/buttonAudioSettings"
+        android:id="@+id/gearAudio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚙"
-        android:layout_marginStart="8dp"
-        android:minWidth="48dp"
-        android:textSize="18sp" />
+        android:text="⚙"/>
     </LinearLayout>
 
-    <!-- Третья строка: Плейлист-видео + ⚙ -->
+    <!-- Скачать видеоплейлист -->
     <LinearLayout
-      android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="12dp">
-
-      <Button
-        android:id="@+id/buttonPlaylistVideo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Плейлист: видео" />
-
-      <Button
-        android:id="@+id/buttonPlaylistVideoSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="⚙"
-        android:layout_marginStart="8dp"
-        android:minWidth="48dp"
-        android:textSize="18sp" />
-    </LinearLayout>
-
-    <!-- Четвёртая строка: Плейлист-аудио + ⚙ -->
-    <LinearLayout
       android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_marginBottom="8dp">
 
       <Button
-        android:id="@+id/buttonPlaylistAudio"
+        android:id="@+id/btnVideoPlaylist"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Плейлист: аудио" />
+        android:layout_height="wrap_content"
+        android:text="Скачать видеоплейлист"/>
 
       <Button
-        android:id="@+id/buttonPlaylistAudioSettings"
+        android:id="@+id/gearVideoPlaylist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚙"
-        android:layout_marginStart="8dp"
-        android:minWidth="48dp"
-        android:textSize="18sp" />
+        android:text="⚙"/>
     </LinearLayout>
 
+    <!-- Скачать аудиоплейлист -->
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:layout_marginBottom="8dp">
+
+      <Button
+        android:id="@+id/btnAudioPlaylist"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text="Скачать аудиоплейлист"/>
+
+      <Button
+        android:id="@+id/gearAudioPlaylist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚙"/>
+    </LinearLayout>
   </LinearLayout>
 </ScrollView>
 

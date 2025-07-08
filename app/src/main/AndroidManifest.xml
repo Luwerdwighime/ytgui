@@ -1,32 +1,29 @@
-<!-- манифест: права, активити, имя пакета -->
+<!-- файл: app/src/main/AndroidManifest.xml -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="org.nazarik.ytgui">
+  package="org.nazarik.ytgui"
+  android:installLocation="internalOnly">
 
-  <!-- разрешения -->
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <!-- Права -->
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
   <application
-    android:allowBackup="true"
-    android:label="YT GUI"
-    android:icon="@android:drawable/ic_menu_save"
-    android:supportsRtl="true"
-    android:theme="@style/Theme.YtGui">
+    android:allowBackup="false"
+    android:icon="@drawable/ic_launcher_diskette"
+    android:label="@string/app_name"
+    android:theme="@style/AppTheme">
 
-    <!-- главная точка входа -->
-    <activity
-      android:name=".MainActivity"
+    <activity android:name=".MainActivity"
       android:exported="true">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
 
-    <!-- вторичные экраны -->
-    <activity android:name=".DownloadActivity" />
-    <activity android:name=".ConsoleActivity" />
-
+    <activity android:name=".DownloadActivity"
+      android:exported="false"/>
   </application>
 </manifest>
 

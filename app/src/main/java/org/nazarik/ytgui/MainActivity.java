@@ -1,116 +1,196 @@
+// файл: app/src/main/java/org/nazarik/ytgui/MainActivity.java
 package org.nazarik.ytgui;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.widget.*;
 import android.content.Intent;
-import java.io.*;
-import java.util.*;
+import android.os.Bundle;
+import android.os.Environment;
+import android.widget.*;
 
-public class MainActivity extends Activity {
-  private TextView consoleTextArea;
-  private Button nextButton;
-  private String[] options;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+public class MainActivity extends AppCompatActivity {
+  private TextView consoleView;
+  private ScrollView consoleScroll;
+  private Button btnNext;
+
+  // ⚙️ Константы
+  private final String envVersion = "v1.2.2";
+  private final File envRoot = new File(
+    "/data/data/org.nazarik.ytgui/files/ytgui-env");
+  private final File pythonBin = new File(envRoot, "bin/python");
+  private final File ffmpegBin = new File(envRoot, "bin/ffmpeg");
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+  protected void onCreate(Bundle saved) {
+    super.onCreate(saved);
     setContentView(R.layout.activity_main);
 
-    consoleTextArea = findViewById(R.id.consoleTextArea);
-    nextButton = findViewById(R.id.nextButton);
+    consoleView = findViewById(R.id.consoleView);
+    consoleScroll = findViewById(R.id.consoleScroll);
+    btnNext = findViewById(R.id.btnNext);
 
-    options = getIntent().getStringArrayExtra("options");
-    File envDir = new File(getFilesDir(), "ytgui-env");
+    List<String> options = getIntent().getStringArrayListExtra("options");
 
-    if (options == null || options.length == 0) {
-      log("MainActivity: запущен без параметров\n");
+    if (options == null) {
+      checkOrInstallEnv();
+    } else {
+      runYtDlp(options);
+    }
+  }
 
-      if (envDir.exists()) {
-        log("Окружение уже установлено — пропускаем загрузку\n");
-        nextButton.setEnabled(true);
+  // 🧪 Установка или проверка окружения
+  private void checkOrInstallEnv() {
+    if (envRoot.exists()) {
+      if (pythonBin.exists()) {
+        writeConsole(getString(R.string.env_ready));
+        btnNext.setEnabled(true);
       } else {
-        log("Окружение не найдено — загружаем...\n");
-        prepareEnv();
+        writeConsole(getString(R.string.env_error));
       }
       return;
     }
 
-    runYtDlp(options);
-  }
-
-  private void log(String text) {
-    runOnUiThread(() -> consoleTextArea.append(text));
-  }
-
-  private void prepareEnv() {
-    log("Загружаем окружение yt-dlp...\n");
+    writeConsole(String.format(
+      getString(R.string.env_download), envVersion));
 
     new Thread(() -> {
       try {
-        String url = "https://codeload.github.com/Luwerdwighime/ytgui-env/zip/refs/tags/v1.2.2";
-        log("Скачиваем: " + url + " (~148Мб)\n");
+        // скачиваем zip
+        String urlStr = "https://codeload.github.com/"
+          + "Luwerdwighime/ytgui-env/zip/refs/tags/" + envVersion;
+        File zipFile = new File(getFilesDir(), "env.zip");
+        downloadZip(urlStr, zipFile);
 
-        File zipFile = new File(getCacheDir(), "env.zip");
-        Utils.download(url, zipFile);
+        // распаковываем zip
+        unzip(zipFile, getFilesDir());
 
-        log("Распаковываем...\n");
-        Utils.extractZip(zipFile, getFilesDir());
+        // переименовываем
+        File unpacked = new File(getFilesDir(),
+          "ytgui-env-" + envVersion);
+        unpacked.renameTo(envRoot);
 
-        File extracted = new File(getFilesDir(), "ytgui-env-v1.2.2");
-        File target = new File(getFilesDir(), "ytgui-env");
-        if (!extracted.renameTo(target)) {
-          log("Не удалось переименовать директорию\n");
-        }
+        // назначаем права
+        pythonBin.setExecutable(true);
+        ffmpegBin.setExecutable(true);
 
-        log("✅ Окружение готово\n");
+        writeConsole(getString(R.string.env_ready));
+        runOnUiThread(() -> btnNext.setEnabled(true));
       } catch (Exception e) {
-        log("Ошибка: " + e.getMessage() + "\n");
+        writeConsole("Ошибка установки: " + e.getMessage());
       }
-
-      runOnUiThread(() -> nextButton.setEnabled(true));
     }).start();
   }
 
-  private void runYtDlp(String[] args) {
+  // 📦 Запуск yt-dlp
+  private void runYtDlp(List<String> options) {
+    if (!pythonBin.exists()) {
+      writeConsole(getString(R.string.env_error));
+      return;
+    }
+
     new Thread(() -> {
       try {
-        File binDir = new File(getFilesDir(), "ytgui-env/bin");
-        File envDir = new File(getFilesDir(), "ytgui-env");
-        File python = new File(binDir, "python3.13");
+        File docs = Environment.getExternalStoragePublicDirectory(
+          Environment.DIRECTORY_DOCUMENTS);
+        File outDir = docs;
 
-        log("Запуск yt-dlp...\n");
-
-        List<String> command = new ArrayList<>();
-        command.add(python.getAbsolutePath());
-        command.add("-m");
-        command.add("yt_dlp");
-        Collections.addAll(command, args);
-
-        log("Команда:\n" + String.join(" ", command) + "\n");
-
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.environment().put("PYTHONHOME", envDir.getAbsolutePath());
-        pb.environment().put("FFMPEG_BINARY", new File(binDir, "ffmpeg").getAbsolutePath());
-        pb.redirectErrorStream(true);
-
-        Process process = pb.start();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-          String line;
-          while ((line = reader.readLine()) != null) {
-            log(line + "\n");
-          }
+        for (String opt : options) {
+          if (opt.contains("playlist") && opt.contains("video"))
+            outDir = new File(docs, "ytVideo");
+          else if (opt.contains("playlist") && opt.contains("audio"))
+            outDir = new File(docs, "ytAudio");
+          else if (opt.contains("video"))
+            outDir = new File(docs, "ytVideo");
+          else
+            outDir = new File(docs, "ytAudio");
         }
+        outDir.mkdirs();
 
-        int exitCode = process.waitFor();
-        log("yt-dlp завершён с кодом " + exitCode + "\n");
+        options.add("--output");
+        options.add(outDir + "/%(title)s.%(ext)s");
+
+        String[] cmd = new String[options.size() + 3];
+        cmd[0] = pythonBin.getAbsolutePath();
+        cmd[1] = "-m";
+        cmd[2] = "yt_dlp";
+        for (int i = 0; i < options.size(); i++)
+          cmd[3 + i] = options.get(i);
+
+        Process proc = new ProcessBuilder(cmd)
+          .redirectErrorStream(true).start();
+
+        BufferedReader reader = new BufferedReader(
+          new InputStreamReader(proc.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null)
+          writeConsole(line);
+
+        int code = proc.waitFor();
+        runOnUiThread(() -> btnNext.setEnabled(true));
+        if (code != 0) {
+          writeConsole("yt-dlp завершился с кодом " + code);
+          Toast.makeText(this,
+            "Ошибка: yt-dlp exit " + code,
+            Toast.LENGTH_LONG).show();
+        }
       } catch (Exception e) {
-        log("Ошибка запуска: " + e.getMessage() + "\n");
+        writeConsole("Ошибка загрузки: " + e.getMessage());
       }
-
-      runOnUiThread(() -> nextButton.setEnabled(true));
     }).start();
+  }
+
+  // 📋 Консольный вывод
+  private void writeConsole(String msg) {
+    runOnUiThread(() -> {
+      consoleView.append(msg + "\n");
+      consoleScroll.post(() ->
+        consoleScroll.fullScroll(ScrollView.FOCUS_DOWN));
+    });
+  }
+
+  // ⏬ Скачать ZIP
+  private void downloadZip(String urlStr, File target) throws IOException {
+    URL url = new URL(urlStr);
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.connect();
+    if (conn.getResponseCode() != HttpURLConnection.HTTP_OK)
+      throw new IOException("HTTP " + conn.getResponseCode());
+
+    InputStream in = conn.getInputStream();
+    OutputStream out = new FileOutputStream(target);
+    byte[] buf = new byte[4096];
+    int n;
+    while ((n = in.read(buf)) != -1)
+      out.write(buf, 0, n);
+    out.close(); in.close(); conn.disconnect();
+  }
+
+  // 📂 Распаковка ZIP
+  private void unzip(File zipFile, File targetDir) throws IOException {
+    ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+    ZipEntry entry;
+    while ((entry = zis.getNextEntry()) != null) {
+      File outFile = new File(targetDir, entry.getName());
+      if (entry.isDirectory()) {
+        outFile.mkdirs();
+      } else {
+        outFile.getParentFile().mkdirs();
+        FileOutputStream fos = new FileOutputStream(outFile);
+        byte[] buf = new byte[4096];
+        int n;
+        while ((n = zis.read(buf)) != -1)
+          fos.write(buf, 0, n);
+        fos.close();
+      }
+    }
+    zis.close();
   }
 }
 

@@ -1,12 +1,14 @@
+<!-- файл: app/src/main/res/values/strings.xml -->
 <resources>
-  <string name="app_name">YT GUI</string>
-  <string name="next">Далее</string>
-  <string name="paste">📋 Вставить</string>
-  <string name="download_video">🎬 Видео</string>
-  <string name="download_audio">🎧 Аудио</string>
-  <string name="download_video_playlist">📺 Видео плейлист</string>
-  <string name="download_audio_playlist">📁 Аудио плейлист</string>
-  <string name="enter_url">Введите URL</string>
-  <string name="toast_empty_url">Введите URL</string>
+  <string name="app_name">ytgui</string>
+  <string name="main_next">Далее</string>
+  <string name="env_download">Качаем yt-dlp %1$s... ~160Мб\n</string>
+  <string name="env_ready">ytgui-env установлен</string>
+  <string name="env_error">Программа повреждена. Требуется переустановка</string>
+  <string name="toast_missing_url">Введите URL</string>
+  <string name="options_title">Опции</string>
+  <string name="options_bestvideo">bestvideo</string>
+  <string name="options_bestaudio">bestaudio</string>
+  <string name="options_warning">⚠ bestvideo+bestaudio может качать 2 файла/трек</string>
 </resources>
 
