@@ -74,9 +74,14 @@ public class MainActivity extends AppCompatActivity {
         writeConsole("Распаковка ytgui-env");
         unzip(zipFile, getFilesDir());
 
+        // ищем распакованную папку
         File unpacked = new File(getFilesDir(),
           "ytgui-env-" + envVersion);
-        unpacked.renameTo(envRoot);
+        if (!unpacked.exists())
+          throw new IOException("Не найдена распакованная папка: " + unpacked);
+
+        // копируем содержимое в ytgui-env
+        copyRecursive(unpacked, envRoot);
 
         pythonBin.setExecutable(true);
         ffmpegBin.setExecutable(true);
@@ -188,6 +193,23 @@ public class MainActivity extends AppCompatActivity {
       }
     }
     zis.close();
+  }
+
+  private void copyRecursive(File src, File dst) throws IOException {
+    if (src.isDirectory()) {
+      if (!dst.exists()) dst.mkdirs();
+      for (File child : src.listFiles()) {
+        copyRecursive(child, new File(dst, child.getName()));
+      }
+    } else {
+      try (InputStream in = new FileInputStream(src);
+           OutputStream out = new FileOutputStream(dst)) {
+        byte[] buf = new byte[4096];
+        int n;
+        while ((n = in.read(buf)) != -1)
+          out.write(buf, 0, n);
+      }
+    }
   }
 }
 
