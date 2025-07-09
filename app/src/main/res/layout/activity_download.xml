@@ -10,25 +10,30 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!-- Поле ввода URL -->
-    <EditText
-      android:id="@+id/urlInput"
+    <!-- URL + вставка в одной строке -->
+    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:hint="Введите URL"
-      android:inputType="textUri"
-      android:textSize="14sp"/>
+      android:orientation="horizontal"
+      android:layout_marginBottom="16dp">
 
-    <!-- Кнопка вставки -->
-    <Button
-      android:id="@+id/pasteBtn"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="📋"
-      android:layout_marginBottom="16dp"/>
+      <EditText
+        android:id="@+id/urlInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Введите URL"
+        android:inputType="textUri"
+        android:textSize="14sp"/>
 
-    <!-- Кнопки действия -->
-    <!-- Скачать видео -->
+      <Button
+        android:id="@+id/pasteBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📋"/>
+    </LinearLayout>
+
+    <!-- Кнопка 1: видео -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -46,10 +51,11 @@
         android:id="@+id/gearVideo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚙"/>
+        android:text="⚙"
+        android:layout_marginStart="8dp"/>
     </LinearLayout>
 
-    <!-- Скачать аудио -->
+    <!-- Кнопка 2: аудио -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -67,10 +73,11 @@
         android:id="@+id/gearAudio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚙"/>
+        android:text="⚙"
+        android:layout_marginStart="8dp"/>
     </LinearLayout>
 
-    <!-- Скачать видеоплейлист -->
+    <!-- Кнопка 3: видеоплейлист -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -88,10 +95,11 @@
         android:id="@+id/gearVideoPlaylist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚙"/>
+        android:text="⚙"
+        android:layout_marginStart="8dp"/>
     </LinearLayout>
 
-    <!-- Скачать аудиоплейлист -->
+    <!-- Кнопка 4: аудиоплейлист -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -109,7 +117,8 @@
         android:id="@+id/gearAudioPlaylist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚙"/>
+        android:text="⚙"
+        android:layout_marginStart="8dp"/>
     </LinearLayout>
   </LinearLayout>
 </ScrollView>
