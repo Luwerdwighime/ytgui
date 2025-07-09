@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
   private Button btnNext;
 
   // ⚙️ Константы
-  private final String envVersion = "v1.2.2"; // ← версия окружения
+  private final String envVersion = "v.1.2.2"; // ← версия окружения
   private final File envRoot = new File(
     "/data/data/org.nazarik.ytgui/files/ytgui-env");
   private final File pythonBin = new File(envRoot, "bin/python");
