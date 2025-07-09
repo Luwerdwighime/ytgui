@@ -37,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
     consoleScroll = findViewById(R.id.consoleScroll);
     btnNext = findViewById(R.id.btnNext);
 
+    btnNext.setOnClickListener(v -> {
+      Intent intent = new Intent(this, DownloadActivity.class);
+      startActivity(intent);
+    });
+
     List<String> options = getIntent().getStringArrayListExtra("options");
 
     if (options == null) {
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
       try {
         File zipFile = new File(getFilesDir(), "env.zip");
         downloadZip(zipUrl, zipFile);
+
+        writeConsole("Распаковка ytgui-env");
         unzip(zipFile, getFilesDir());
 
         File unpacked = new File(getFilesDir(),
