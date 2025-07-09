@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
   private ScrollView consoleScroll;
   private Button btnNext;
 
-  private final String envVersion = "v.1.2.2";
+  private final String envVersion = "v1.2.3";
   private final File envRoot = new File(
     "/data/data/org.nazarik.ytgui/files/ytgui-env");
   private final File pythonBin = new File(envRoot, "bin/python3.13");
