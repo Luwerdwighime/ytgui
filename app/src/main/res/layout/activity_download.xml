@@ -10,7 +10,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!-- URL + вставка -->
+    <!-- Ввод URL + вставка -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -34,12 +34,12 @@
         android:layout_marginStart="8dp"/>
     </LinearLayout>
 
-    <!-- Кнопка 1 -->
+    <!-- Скачать видео -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
-      android:layout_marginBottom="8dp">
+      android:layout_marginBottom="12dp">
 
       <Button
         android:id="@+id/btnVideo"
@@ -54,15 +54,15 @@
         android:layout_height="wrap_content"
         android:text="⚙"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="4dp"/>
     </LinearLayout>
 
-    <!-- Кнопка 2 -->
+    <!-- Скачать аудио -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
-      android:layout_marginBottom="8dp">
+      android:layout_marginBottom="12dp">
 
       <Button
         android:id="@+id/btnAudio"
@@ -77,15 +77,15 @@
         android:layout_height="wrap_content"
         android:text="⚙"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="4dp"/>
     </LinearLayout>
 
-    <!-- Кнопка 3 -->
+    <!-- Скачать видеоплейлист -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
-      android:layout_marginBottom="8dp">
+      android:layout_marginBottom="12dp">
 
       <Button
         android:id="@+id/btnVideoPlaylist"
@@ -100,15 +100,15 @@
         android:layout_height="wrap_content"
         android:text="⚙"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="4dp"/>
     </LinearLayout>
 
-    <!-- Кнопка 4 -->
+    <!-- Скачать аудиоплейлист -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
-      android:layout_marginBottom="8dp">
+      android:layout_marginBottom="12dp">
 
       <Button
         android:id="@+id/btnAudioPlaylist"
@@ -123,7 +123,7 @@
         android:layout_height="wrap_content"
         android:text="⚙"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="4dp"/>
     </LinearLayout>
   </LinearLayout>
 </ScrollView>
