@@ -10,7 +10,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!-- URL + вставка в одной строке -->
+    <!-- URL + вставка -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -30,10 +30,11 @@
         android:id="@+id/pasteBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="📋"/>
+        android:text="📋"
+        android:layout_marginStart="8dp"/>
     </LinearLayout>
 
-    <!-- Кнопка 1: видео -->
+    <!-- Кнопка 1 -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -52,10 +53,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="⚙"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <!-- Кнопка 2: аудио -->
+    <!-- Кнопка 2 -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -74,10 +76,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="⚙"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <!-- Кнопка 3: видеоплейлист -->
+    <!-- Кнопка 3 -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -96,10 +99,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="⚙"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <!-- Кнопка 4: аудиоплейлист -->
+    <!-- Кнопка 4 -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -118,7 +122,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="⚙"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"/>
     </LinearLayout>
   </LinearLayout>
 </ScrollView>
