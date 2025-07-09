@@ -20,11 +20,10 @@ public class MainActivity extends AppCompatActivity {
   private ScrollView consoleScroll;
   private Button btnNext;
 
-  // ⚙️ Константы
-  private final String envVersion = "v.1.2.2"; // ← версия окружения
+  private final String envVersion = "v.1.2.2";
   private final File envRoot = new File(
     "/data/data/org.nazarik.ytgui/files/ytgui-env");
-  private final File pythonBin = new File(envRoot, "bin/python");
+  private final File pythonBin = new File(envRoot, "bin/python3.13");
   private final File ffmpegBin = new File(envRoot, "bin/ffmpeg");
   private final String zipUrl = "https://github.com/"
     + "Luwerdwighime/ytgui-env/archive/refs/tags/" + envVersion + ".zip";
@@ -47,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  // 📦 Проверка или установка окружения
   private void checkOrInstallEnv() {
     if (envRoot.exists()) {
       if (pythonBin.exists()) {
@@ -84,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
     }).start();
   }
 
-  // 🎬 Запуск yt-dlp
   private void runYtDlp(List<String> options) {
     if (!pythonBin.exists()) {
       writeConsole(getString(R.string.env_error));
@@ -142,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
     }).start();
   }
 
-  // 🖥️ Вывод в консоль
   private void writeConsole(String msg) {
     runOnUiThread(() -> {
       consoleView.append(msg + "\n");
@@ -151,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
-  // ⏬ Загрузка ZIP
   private void downloadZip(String urlStr, File target) throws IOException {
     URL url = new URL(urlStr);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -168,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
     out.close(); in.close(); conn.disconnect();
   }
 
-  // 📂 Распаковка ZIP
   private void unzip(File zipFile, File targetDir) throws IOException {
     ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
     ZipEntry entry;
