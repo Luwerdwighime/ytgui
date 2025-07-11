@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
       return;
     }
 
-    writeConsole("📦 Качаем окружение " + envVersion);
+    writeConsole("📦 Качаем окружение " + envVersion + " ~255Мб...");
     writeConsole(zipUrl);
 
     new Thread(() -> {
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         writeConsole("📂 Распаковка ytgui-env");
         unzip(zipFile, getFilesDir());
 
-        File unpacked = new File(getFilesDir(), "ytgui-env-" + envVersion);
+        File unpacked = new File(getFilesDir(), "ytgui-env-" + envVersion.substring(1));
         if (!unpacked.exists())
           throw new IOException("Не найдена распакованная папка: " + unpacked);
 
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void runYtDlp(List<String> options) {
     if (!pythonBin.exists() || !ytDlpBin.exists()) {
-      writeConsole("❌ Окружение повреждено — запуск невозможен");
+      writeConsole("❌ Окружение повреждено, требуется переустановка приложения");
       return;
     }
 
