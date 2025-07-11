@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
           throw new IOException("Не найдена распакованная папка: " + unpacked);
 
         copyRecursive(unpacked, envRoot);
-        new File(pythonBin).setExecutable(true);
+        pythonBin.setExecutable(true);
 
         writeConsole("✅ Установка завершена");
         runOnUiThread(() -> btnNext.setEnabled(true));
