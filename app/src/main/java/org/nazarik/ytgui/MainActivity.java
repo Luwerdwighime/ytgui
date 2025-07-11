@@ -20,11 +20,11 @@ public class MainActivity extends AppCompatActivity {
   private ScrollView consoleScroll;
   private Button btnNext;
 
-  private final String envVersion = "v1.2.3";
+  private final String envVersion = "v1.3.0";
   private final File envRoot = new File(
     "/data/data/org.nazarik.ytgui/files/ytgui-env");
-  private final File pythonBin = new File(envRoot, "bin/python3.13");
-  private final File ffmpegBin = new File(envRoot, "bin/ffmpeg");
+  private final File pythonBin = new File(envRoot, "usr/bin/python3.13");
+  private final File ytDlpBin = new File(envRoot, "usr/bin/yt-dlp");
   private final String zipUrl = "https://github.com/"
     + "Luwerdwighime/ytgui-env/archive/refs/tags/" + envVersion + ".zip";
 
@@ -53,17 +53,16 @@ public class MainActivity extends AppCompatActivity {
 
   private void checkOrInstallEnv() {
     if (envRoot.exists()) {
-      if (pythonBin.exists()) {
-        writeConsole(getString(R.string.env_ready));
+      if (pythonBin.exists() && ytDlpBin.exists()) {
+        writeConsole("✅ Окружение " + envVersion + " уже установлено");
         btnNext.setEnabled(true);
       } else {
-        writeConsole(getString(R.string.env_error));
+        writeConsole("❌ Окружение повреждено — отсутствует python или yt-dlp");
       }
       return;
     }
 
-    writeConsole(String.format(
-      getString(R.string.env_download), envVersion));
+    writeConsole("📦 Качаем окружение " + envVersion);
     writeConsole(zipUrl);
 
     new Thread(() -> {
@@ -71,22 +70,16 @@ public class MainActivity extends AppCompatActivity {
         File zipFile = new File(getFilesDir(), "env.zip");
         downloadZip(zipUrl, zipFile);
 
-        writeConsole("Распаковка ytgui-env");
+        writeConsole("📂 Распаковка ytgui-env");
         unzip(zipFile, getFilesDir());
 
-        // ищем распакованную папку
-        File unpacked = new File(getFilesDir(),
-          "ytgui-env-" + envVersion);
+        File unpacked = new File(getFilesDir(), "ytgui-env-" + envVersion);
         if (!unpacked.exists())
           throw new IOException("Не найдена распакованная папка: " + unpacked);
 
-        // копируем содержимое в ytgui-env
         copyRecursive(unpacked, envRoot);
 
-        pythonBin.setExecutable(true);
-        ffmpegBin.setExecutable(true);
-
-        writeConsole(getString(R.string.env_ready));
+        writeConsole("✅ Установка завершена");
         runOnUiThread(() -> btnNext.setEnabled(true));
       } catch (Exception e) {
         writeConsole("Ошибка установки: " + e.getMessage());
@@ -95,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void runYtDlp(List<String> options) {
-    if (!pythonBin.exists()) {
-      writeConsole(getString(R.string.env_error));
+    if (!pythonBin.exists() || !ytDlpBin.exists()) {
+      writeConsole("❌ Окружение повреждено — запуск невозможен");
       return;
     }
 
