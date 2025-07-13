@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -97,38 +96,72 @@ public class DownloadActivity extends AppCompatActivity {
   }
 
   private String[] buildVideoOptions(String url, boolean bv, boolean ba) {
+    if (!bv && !ba) {
+      return new String[] {
+        "-o", "/storage/emulated/0/Documents/ytVideo/%(title)s.%(ext)s",
+        url
+      };
+    }
+
+    String format = bv && ba ? "bestvideo+bestaudio"
+      : bv ? "bestvideo"
+      : "bestaudio";
+
     return new String[] {
-      "-f", bv && ba ? "bestvideo+bestaudio"
-        : bv ? "bestvideo"
-        : ba ? "bestaudio" : "",
+      "-f", format,
       "-o", "/storage/emulated/0/Documents/ytVideo/%(title)s.%(ext)s",
       url
     };
   }
 
   private String[] buildAudioOptions(String url, boolean ba) {
+    if (!ba) {
+      return new String[] {
+        "-o", "/storage/emulated/0/Documents/ytAudio/%(title)s.%(ext)s",
+        url
+      };
+    }
+
     return new String[] {
-      ba ? "-f" : "", ba ? "bestaudio" : "",
+      "-f", "bestaudio",
       "-o", "/storage/emulated/0/Documents/ytAudio/%(title)s.%(ext)s",
       url
     };
   }
 
   private String[] buildVideoPlaylistOptions(String url, boolean bv, boolean ba) {
+    if (!bv && !ba) {
+      return new String[] {
+        "--yes-playlist",
+        "-o", "/storage/emulated/0/Documents/ytVideo/%(playlist)s/%(title)s.%(ext)s",
+        url
+      };
+    }
+
+    String format = bv && ba ? "bestvideo+bestaudio"
+      : bv ? "bestvideo"
+      : "bestaudio";
+
     return new String[] {
       "--yes-playlist",
-      "-f", bv && ba ? "bestvideo+bestaudio"
-        : bv ? "bestvideo"
-        : ba ? "bestaudio" : "",
+      "-f", format,
       "-o", "/storage/emulated/0/Documents/ytVideo/%(playlist)s/%(title)s.%(ext)s",
       url
     };
   }
 
   private String[] buildAudioPlaylistOptions(String url, boolean ba) {
+    if (!ba) {
+      return new String[] {
+        "--yes-playlist",
+        "-o", "/storage/emulated/0/Documents/ytAudio/%(playlist)s/%(title)s.%(ext)s",
+        url
+      };
+    }
+
     return new String[] {
       "--yes-playlist",
-      ba ? "-f" : "", ba ? "bestaudio" : "",
+      "-f", "bestaudio",
       "-o", "/storage/emulated/0/Documents/ytAudio/%(playlist)s/%(title)s.%(ext)s",
       url
     };
