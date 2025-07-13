@@ -53,12 +53,10 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void installEnv() {
-    appendLine("Качаем yt-dlp v" + ENV_VERSION + "... ~127Мб");
+    appendLine("Качаем yt-dlp [" + ENV_VERSION + "]... ~127Мб");
     new Thread(() -> {
       try {
         File zip = new File(getFilesDir(), "ytgui-env.zip");
-        File envTarget = new File(getFilesDir(), "ytgui-env-" + ENV_VERSION);
-        File envFinal = new File(getFilesDir(), "ytgui-env");
 
         HttpURLConnection conn = (HttpURLConnection) new URL(ZIP_URL).openConnection();
         conn.connect();
@@ -70,14 +68,18 @@ public class MainActivity extends AppCompatActivity {
         in.close(); out.close();
 
         appendLine("Распаковка ytgui-env...");
-        unzip(zip, envTarget);
+        unzip(zip, getFilesDir());
 
         zip.delete();
-        if (envFinal.exists()) envFinal.delete();
-        envTarget.renameTo(envFinal);
 
-        new File(envFinal, "bin/ffmpeg").setExecutable(true);
-        new File(envFinal, "bin/python3.11").setExecutable(true);
+        // Переименование ytgui-env-1.4.0 → ytgui-env
+        File src = new File(getFilesDir(), "ytgui-env-" + ENV_VERSION);
+        File dst = new File(getFilesDir(), "ytgui-env");
+        if (dst.exists()) dst.delete();
+        src.renameTo(dst);
+
+        new File(dst, "bin/ffmpeg").setExecutable(true);
+        new File(dst, "bin/python3.11").setExecutable(true);
 
         appendLine("ytgui-env установлен!");
         runOnUiThread(() -> nextButton.setEnabled(true));
@@ -90,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
   private void runDownloader() {
     File py = new File(getFilesDir(), "ytgui-env/bin/python3.11");
     if (!py.exists()) {
-      appendLine("Окружение v" + ENV_VERSION + " повреждено.\nТребуется переустановка.");
+      appendLine("Окружение [" + ENV_VERSION + "] повреждено.\nТребуется переустановка.");
       return;
     }
 
