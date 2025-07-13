@@ -3,33 +3,34 @@
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/backgroundDark">
+  android:background="?android:windowBackground"
+  android:padding="8dp">
 
-  <!-- Хакерская консоль -->
+  <!-- Консоль -->
   <ScrollView
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    android:padding="8dp"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/backgroundDark">
 
     <TextView
       android:id="@+id/consoleText"
       style="@style/ConsoleTextArea"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="@string/console_hint"
       android:textIsSelectable="true" />
   </ScrollView>
 
-  <!-- Кнопка перехода -->
+  <!-- Кнопка "Далее" -->
   <Button
     android:id="@+id/nextButton"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="@string/next_button"
     android:enabled="false"
-    android:background="@drawable/button_selector"
-    android:textColor="@color/textSecondary" />
+    android:backgroundTint="?attr/colorPrimary"
+    android:textColor="?android:textColorPrimary"
+    android:alpha="0.5" />
 </LinearLayout>
 

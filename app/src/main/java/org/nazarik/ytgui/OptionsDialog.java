@@ -33,8 +33,7 @@ public class OptionsDialog {
       .setTitle("Опции")
       .setView(layout)
       .setPositiveButton("ОК", (dialog, which) ->
-        listener.onSelected(cbBestVideo.isChecked(), cbBestAudio.isChecked())
-      )
+        listener.onSelected(cbBestVideo.isChecked(), cbBestAudio.isChecked()))
       .setNegativeButton("Отмена", null)
       .show();
   }
@@ -52,8 +51,7 @@ public class OptionsDialog {
       .setTitle("Опции")
       .setView(layout)
       .setPositiveButton("ОК", (dialog, which) ->
-        listener.onSelected(false, cbBestAudio.isChecked())
-      )
+        listener.onSelected(false, cbBestAudio.isChecked()))
       .setNegativeButton("Отмена", null)
       .show();
   }
