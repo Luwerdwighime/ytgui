@@ -107,6 +107,7 @@ public class DownloadActivity extends AppCompatActivity {
         opts = buildVideoPlaylistOptions(url, bestVideoVideoPl, bestAudioVideoPl);
         break;
       case 3:
+      default:
         opts = buildAudioPlaylistOptions(url, bestAudioAudioPl);
     }
 
