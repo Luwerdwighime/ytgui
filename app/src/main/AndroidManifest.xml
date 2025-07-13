@@ -1,29 +1,32 @@
-<!-- файл: app/src/main/AndroidManifest.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="org.nazarik.ytgui"
-  android:installLocation="internalOnly">
+  package="org.nazarik.ytgui">
 
-  <!-- Права -->
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <!-- ✅ Доступ к сети -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <!-- ✅ Доступ к памяти -->
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <application
-    android:allowBackup="false"
-    android:icon="@drawable/ic_launcher_diskette"
+    android:allowBackup="true"
     android:label="@string/app_name"
-    android:theme="@style/AppTheme">
+    android:icon="@drawable/ic_launcher_diskette"
+    android:theme="@style/Theme.YtGUI">
 
-    <activity android:name=".MainActivity"
+    <activity
+      android:name=".DownloadActivity"
+      android:exported="false" />
+
+    <activity
+      android:name=".MainActivity"
       android:exported="true">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
 
-    <activity android:name=".DownloadActivity"
-      android:exported="false"/>
   </application>
 </manifest>
 

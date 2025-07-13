@@ -1,11 +1,11 @@
-<!-- файл: app/src/main/res/values/styles.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-    <item name="colorPrimary">@color/purple_500</item>
-    <item name="colorPrimaryDark">@color/purple_700</item>
-    <item name="colorAccent">@color/teal_200</item>
-    <item name="android:buttonStyle">@style/Widget.MaterialComponents.Button</item>
-    <item name="android:icon">@drawable/ic_launcher_diskette</item>
+  <style name="ConsoleTextArea">
+    <item name="android:background">@color/backgroundDark</item>
+    <item name="android:textColor">@color/textSecondary</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:typeface">monospace</item>
+    <item name="android:padding">4dp</item>
   </style>
 </resources>
 

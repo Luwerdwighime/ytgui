@@ -1,31 +1,35 @@
-<!-- файл: app/src/main/res/layout/activity_main.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:padding="8dp">
+  android:background="@color/backgroundDark">
 
+  <!-- Хакерская консоль -->
   <ScrollView
-    android:id="@+id/consoleScroll"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
+    android:padding="8dp"
     android:fillViewport="true">
 
     <TextView
-      android:id="@+id/consoleView"
+      android:id="@+id/consoleText"
+      style="@style/ConsoleTextArea"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:textIsSelectable="true"
-      android:textSize="12sp"
-      android:typeface="monospace"/>
+      android:text="@string/console_hint"
+      android:textIsSelectable="true" />
   </ScrollView>
 
+  <!-- Кнопка перехода -->
   <Button
-    android:id="@+id/btnNext"
+    android:id="@+id/nextButton"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:text="@string/next_button"
     android:enabled="false"
-    android:text="@string/main_next"/>
+    android:background="@drawable/button_selector"
+    android:textColor="@color/textSecondary" />
 </LinearLayout>
 

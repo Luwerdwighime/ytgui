@@ -1,56 +1,52 @@
 plugins {
-    id 'com.android.application'
+  id 'com.android.application'
 }
 
 android {
-    namespace 'org.nazarik.ytgui'
-    compileSdk 34
+  namespace 'org.nazarik.ytgui'
+  compileSdkVersion 33
 
-    signingConfigs {
-        release {
-            storeFile file("keystore.jks")
-            storePassword "ytgui123"
-            keyAlias "ytgui"
-            keyPassword "ytgui123"
-        }
-    }
+  defaultConfig {
+    applicationId "org.nazarik.ytgui"
+    minSdkVersion 24
+    targetSdkVersion 33
+    versionCode 1
+    versionName "1.0"
 
-    defaultConfig {
-        applicationId "org.nazarik.ytgui"
-        minSdk 28
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
+    manifestPlaceholders = [storage: "Documents"]
+  }
 
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-            minifyEnabled false
-            shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+  signingConfigs {
+    release {
+      storeFile file("keystore.jks")
+      storePassword "1234567"
+      keyAlias "ytgui"
+      keyPassword "1234567"
     }
+  }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+  buildTypes {
+    release {
+      signingConfig signingConfigs.release
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile(
+        'proguard-android-optimize.txt'
+      ), 'proguard-rules.pro'
     }
+    debug {
+      signingConfig signingConfigs.release
+    }
+  }
 
-    packagingOptions {
-        resources {
-            excludes += ['META-INF/LICENSE.md', 'META-INF/LICENSE-notice.md']
-        }
-    }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+  implementation 'androidx.appcompat:appcompat:1.6.1'
+  implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+  implementation 'com.google.android.material:material:1.9.0'
 }
 

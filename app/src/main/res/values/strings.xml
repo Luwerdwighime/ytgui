@@ -1,14 +1,23 @@
-<!-- файл: app/src/main/res/values/strings.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">ytgui</string>
-  <string name="main_next">Далее</string>
-  <string name="env_download">Качаем yt-dlp %1$s... ~160Мб\n</string>
-  <string name="env_ready">ytgui-env установлен</string>
-  <string name="env_error">Программа повреждена. Требуется переустановка</string>
-  <string name="toast_missing_url">Введите URL</string>
-  <string name="options_title">Опции</string>
-  <string name="options_bestvideo">bestvideo</string>
-  <string name="options_bestaudio">bestaudio</string>
-  <string name="options_warning">⚠ bestvideo+bestaudio может качать 2 файла/трек</string>
+  <string name="app_name">YTGUI</string>
+
+  <!-- MainActivity -->
+  <string name="console_hint">Хакерская консоль запуска</string>
+  <string name="next_button">Далее</string>
+
+  <!-- DownloadActivity -->
+  <string name="url_hint">Введите URL</string>
+  <string name="paste_button">📋</string>
+  <string name="video_button">Скачать видео</string>
+  <string name="audio_button">Скачать аудио</string>
+  <string name="video_playlist_button">Скачать видео плейлист</string>
+  <string name="audio_playlist_button">Скачать аудио плейлист</string>
+  <string name="gear_button">⚙️</string>
+  <string name="options_dialog_title">Опции</string>
+  <string name="bestvideo">bestvideo</string>
+  <string name="bestaudio">bestaudio</string>
+  <string name="warning_text">⚠️ bestvideo+bestaudio может качать 2 файла</string>
+  <string name="toast_empty_url">Введите URL</string>
 </resources>
 

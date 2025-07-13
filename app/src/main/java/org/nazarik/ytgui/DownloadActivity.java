@@ -1,29 +1,30 @@
-// файл: app/src/main/java/org/nazarik/ytgui/DownloadActivity.java
 package org.nazarik.ytgui;
 
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
-
 public class DownloadActivity extends AppCompatActivity {
-  private EditText urlInput;
 
-  // флаги
-  private boolean videoBestVideo = false;
-  private boolean videoBestAudio = false;
-  private boolean audioBestAudio = false;
-  private boolean vplBestVideo = false;
-  private boolean vplBestAudio = false;
-  private boolean aplBestAudio = false;
+  private EditText urlInput;
+  private Button pasteButton;
+
+  // Кнопки
+  private Button videoButton, audioButton, videoPlButton, audioPlButton;
+  private Button videoGear, audioGear, videoPlGear, audioPlGear;
+
+  // Флаги опций
+  private boolean bestVideoVideo = false, bestAudioVideo = false;
+  private boolean bestAudioAudio = false;
+  private boolean bestVideoVideoPl = false, bestAudioVideoPl = false;
+  private boolean bestAudioAudioPl = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -31,133 +32,129 @@ public class DownloadActivity extends AppCompatActivity {
     setContentView(R.layout.activity_download);
 
     urlInput = findViewById(R.id.urlInput);
-    Button pasteBtn = findViewById(R.id.pasteBtn);
-    pasteBtn.setOnClickListener(v -> pasteClipboard());
+    pasteButton = findViewById(R.id.pasteButton);
 
-    bindMainButton(R.id.btnVideo, R.id.gearVideo, true, true, false);
-    bindMainButton(R.id.btnAudio, R.id.gearAudio, false, true, false);
-    bindMainButton(R.id.btnVideoPlaylist, R.id.gearVideoPlaylist, true, true, true);
-    bindMainButton(R.id.btnAudioPlaylist, R.id.gearAudioPlaylist, false, true, true);
+    videoButton = findViewById(R.id.videoButton);
+    audioButton = findViewById(R.id.audioButton);
+    videoPlButton = findViewById(R.id.videoPlaylistButton);
+    audioPlButton = findViewById(R.id.audioPlaylistButton);
+
+    videoGear = findViewById(R.id.videoGear);
+    audioGear = findViewById(R.id.audioGear);
+    videoPlGear = findViewById(R.id.videoPlaylistGear);
+    audioPlGear = findViewById(R.id.audioPlaylistGear);
+
+    pasteButton.setOnClickListener(v -> {
+      ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+      if (cm != null && cm.getPrimaryClip() != null) {
+        ClipData clip = cm.getPrimaryClip();
+        if (clip.getItemCount() > 0) {
+          urlInput.setText(clip.getItemAt(0).coerceToText(this));
+        }
+      }
+    });
+
+    // Шестерёнки
+    videoGear.setOnClickListener(v ->
+      OptionsDialog.showVideoDialog(this, (bv, ba) -> {
+        bestVideoVideo = bv;
+        bestAudioVideo = ba;
+      })
+    );
+
+    audioGear.setOnClickListener(v ->
+      OptionsDialog.showAudioDialog(this, (bv, ba) ->
+        bestAudioAudio = ba
+      )
+    );
+
+    videoPlGear.setOnClickListener(v ->
+      OptionsDialog.showVideoDialog(this, (bv, ba) -> {
+        bestVideoVideoPl = bv;
+        bestAudioVideoPl = ba;
+      })
+    );
+
+    audioPlGear.setOnClickListener(v ->
+      OptionsDialog.showAudioDialog(this, (bv, ba) ->
+        bestAudioAudioPl = ba
+      )
+    );
+
+    // Кнопки запуска
+    videoButton.setOnClickListener(v -> startDownload(0));
+    audioButton.setOnClickListener(v -> startDownload(1));
+    videoPlButton.setOnClickListener(v -> startDownload(2));
+    audioPlButton.setOnClickListener(v -> startDownload(3));
   }
 
-  private void pasteClipboard() {
-    ClipboardManager cb = (ClipboardManager)
-      getSystemService(Context.CLIPBOARD_SERVICE);
-    if (cb != null && cb.hasPrimaryClip()) {
-      ClipData clip = cb.getPrimaryClip();
-      if (clip != null && clip.getItemCount() > 0) {
-        urlInput.setText(clip.getItemAt(0).coerceToText(this));
-      }
+  private void startDownload(int type) {
+    String url = urlInput.getText().toString().trim();
+    if (url.isEmpty()) {
+      Toast.makeText(this, R.string.toast_empty_url, Toast.LENGTH_SHORT).show();
+      return;
     }
+
+    String[] opts;
+    switch (type) {
+      case 0:
+        opts = buildVideoOptions(url, bestVideoVideo, bestAudioVideo);
+        break;
+      case 1:
+        opts = buildAudioOptions(url, bestAudioAudio);
+        break;
+      case 2:
+        opts = buildVideoPlaylistOptions(url, bestVideoVideoPl, bestAudioVideoPl);
+        break;
+      case 3:
+        opts = buildAudioPlaylistOptions(url, bestAudioAudioPl);
+    }
+
+    Intent intent = new Intent(this, MainActivity.class);
+    intent.putExtra("options", opts);
+    startActivity(intent);
   }
 
-  private void bindMainButton(int btnId, int gearId,
-      boolean allowBestVideo, boolean allowBestAudio, boolean isPlaylist) {
-
-    Button actionBtn = findViewById(btnId);
-    Button gearBtn = findViewById(gearId);
-
-    actionBtn.setOnClickListener(v -> {
-      String url = urlInput.getText().toString().trim();
-      if (url.isEmpty()) {
-        Toast.makeText(this,
-          getString(R.string.toast_missing_url),
-          Toast.LENGTH_SHORT).show();
-        return;
-      }
-
-      ArrayList<String> opts = new ArrayList<>();
-      if (isPlaylist) opts.add("--yes-playlist");
-
-      // генерим -f bestvideo+bestaudio или один из них
-      String format = null;
-      if (btnId == R.id.btnVideo) {
-        format = buildFormat(videoBestVideo, videoBestAudio);
-      } else if (btnId == R.id.btnAudio) {
-        format = buildFormat(false, audioBestAudio);
-      } else if (btnId == R.id.btnVideoPlaylist) {
-        format = buildFormat(vplBestVideo, vplBestAudio);
-      } else if (btnId == R.id.btnAudioPlaylist) {
-        format = buildFormat(false, aplBestAudio);
-      }
-
-      if (format != null) {
-        opts.add("-f");
-        opts.add(format);
-      }
-
-      opts.add(url);
-
-      Intent intent = new Intent(this, MainActivity.class);
-      intent.putStringArrayListExtra("options", opts);
-      startActivity(intent);
-    });
-
-    gearBtn.setOnClickListener(v -> {
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder.setTitle(getString(R.string.options_title));
-      LinearLayout layout = new LinearLayout(this);
-      layout.setOrientation(LinearLayout.VERTICAL);
-
-      // bestvideo
-      if (allowBestVideo) {
-        CheckBox cbVideo = new CheckBox(this);
-        cbVideo.setText(getString(R.string.options_bestvideo));
-        cbVideo.setChecked(btnId == R.id.btnVideo
-          ? videoBestVideo : vplBestVideo);
-        cbVideo.setOnCheckedChangeListener((v2, checked) -> {
-          if (btnId == R.id.btnVideo)
-            videoBestVideo = checked;
-          else
-            vplBestVideo = checked;
-        });
-        layout.addView(cbVideo);
-      }
-
-      // bestaudio
-      if (allowBestAudio) {
-        CheckBox cbAudio = new CheckBox(this);
-        cbAudio.setText(getString(R.string.options_bestaudio));
-        cbAudio.setChecked(btnId == R.id.btnVideo
-          ? videoBestAudio :
-          btnId == R.id.btnAudio ? audioBestAudio :
-          btnId == R.id.btnVideoPlaylist ? vplBestAudio :
-          aplBestAudio);
-        cbAudio.setOnCheckedChangeListener((v2, checked) -> {
-          if (btnId == R.id.btnVideo)
-            videoBestAudio = checked;
-          else if (btnId == R.id.btnAudio)
-            audioBestAudio = checked;
-          else if (btnId == R.id.btnVideoPlaylist)
-            vplBestAudio = checked;
-          else
-            aplBestAudio = checked;
-        });
-        layout.addView(cbAudio);
-      }
-
-      // предупреждение
-      if (allowBestVideo && allowBestAudio) {
-        TextView warn = new TextView(this);
-        warn.setText(getString(R.string.options_warning));
-        layout.addView(warn);
-      }
-
-      builder.setView(layout);
-      builder.setPositiveButton("OK", null);
-      builder.show();
-    });
+  private String[] buildVideoOptions(String url, boolean bestVideo, boolean bestAudio) {
+    return new String[] {
+      bestVideo ? "-f" : "",
+      bestVideo && bestAudio ? "bestvideo+bestaudio" :
+        bestVideo ? "bestvideo" :
+        bestAudio ? "bestaudio" : "",
+      "-o", "/storage/emulated/0/Documents/ytVideo/%(title)s.%(ext)s",
+      url
+    };
   }
 
-  // постройка строки формата
-  private String buildFormat(boolean hasVideo, boolean hasAudio) {
-    if (hasVideo && hasAudio)
-      return "bestvideo+bestaudio";
-    if (hasVideo)
-      return "bestvideo";
-    if (hasAudio)
-      return "bestaudio";
-    return null;
+  private String[] buildAudioOptions(String url, boolean bestAudio) {
+    return new String[] {
+      bestAudio ? "-f" : "",
+      bestAudio ? "bestaudio" : "",
+      "-o", "/storage/emulated/0/Documents/ytAudio/%(title)s.%(ext)s",
+      url
+    };
+  }
+
+  private String[] buildVideoPlaylistOptions(String url, boolean bestVideo, boolean bestAudio) {
+    return new String[] {
+      "--yes-playlist",
+      bestVideo ? "-f" : "",
+      bestVideo && bestAudio ? "bestvideo+bestaudio" :
+        bestVideo ? "bestvideo" :
+        bestAudio ? "bestaudio" : "",
+      "-o", "/storage/emulated/0/Documents/ytVideo/%(playlist)s/%(title)s.%(ext)s",
+      url
+    };
+  }
+
+  private String[] buildAudioPlaylistOptions(String url, boolean bestAudio) {
+    return new String[] {
+      "--yes-playlist",
+      bestAudio ? "-f" : "",
+      bestAudio ? "bestaudio" : "",
+      "-o", "/storage/emulated/0/Documents/ytAudio/%(playlist)s/%(title)s.%(ext)s",
+      url
+    };
   }
 }
 
