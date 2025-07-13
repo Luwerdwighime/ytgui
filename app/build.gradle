@@ -19,9 +19,9 @@ android {
   signingConfigs {
     release {
       storeFile file("keystore.jks")
-      storePassword "1234567"
+      storePassword "ytgui123"
       keyAlias "ytgui"
-      keyPassword "1234567"
+      keyPassword "ytgui123"
     }
   }
 
