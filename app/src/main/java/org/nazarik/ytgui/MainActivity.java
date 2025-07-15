@@ -78,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
         if (dst.exists()) dst.delete();
         src.renameTo(dst);
 
-        new File(dst, "bin/ffmpeg").setExecutable(true);
-        new File(dst, "bin/python3.11").setExecutable(true);
+        new File(dst, "/usr/bin/ffmpeg").setExecutable(true);
+        new File(dst, "/usr/bin/python3.13").setExecutable(true);
 
         appendLine("ytgui-env установлен!");
         runOnUiThread(() -> nextButton.setEnabled(true));
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void runDownloader() {
-    File py = new File(getFilesDir(), "ytgui-env/bin/python3.11");
+    File py = new File(getFilesDir(), "/ytgui-env/usr/bin/python3.13");
     if (!py.exists()) {
       appendLine("Окружение [" + ENV_VERSION + "] повреждено.\nТребуется переустановка.");
       return;
@@ -99,12 +99,12 @@ public class MainActivity extends AppCompatActivity {
     new Thread(() -> {
       try {
         ProcessBuilder pb = new ProcessBuilder(buildCommand());
-        File env = new File(getFilesDir(), "ytgui-env");
+        File env = new File(getFilesDir(), "/ytgui-env");
 
         pb.environment().put("PREFIX", env.getAbsolutePath());
-        pb.environment().put("PATH", env.getAbsolutePath() + "/bin:" + System.getenv("PATH"));
+        pb.environment().put("PATH", env.getAbsolutePath() + "/usr/bin:" + System.getenv("PATH"));
         pb.environment().put("LD_LIBRARY_PATH",
-          env.getAbsolutePath() + "/lib:" + System.getenv("LD_LIBRARY_PATH"));
+          env.getAbsolutePath() + "/usr/lib:" + System.getenv("LD_LIBRARY_PATH"));
         pb.directory(env);
 
         Process proc = pb.start();
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private String[] buildCommand() {
-    String binPath = new File(getFilesDir(), "ytgui-env/bin/python3.11").getAbsolutePath();
+    String binPath = new File(getFilesDir(), "/ytgui-env/usr/bin/python3.13").getAbsolutePath();
     String[] cmd = new String[options.length + 3];
     cmd[0] = binPath;
     cmd[1] = "-m";
