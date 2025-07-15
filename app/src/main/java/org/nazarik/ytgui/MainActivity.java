@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void installEnv() {
-    appendLine("Качаем yt-dlp [" + ENV_VERSION + "]... ~127Мб");
+    appendLine("Качаем yt-dlp [" + ENV_VERSION + "]... ~258Мб");
     new Thread(() -> {
       try {
         File zip = new File(getFilesDir(), "ytgui-env.zip");
