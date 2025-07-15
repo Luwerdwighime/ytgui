@@ -56,6 +56,13 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void installEnv() {
+    File py = new File(getFilesDir(), PYTHON_PATH);
+    if (py.exists()) {
+      appendLine("Окружение [" + ENV_VERSION + "] уже установлено.");
+      runOnUiThread(() -> nextButton.setEnabled(true));
+      return;
+    }
+
     appendLine("Качаем yt-dlp [" + ENV_VERSION + "]... ~258Мб");
     new Thread(() -> {
       try {
