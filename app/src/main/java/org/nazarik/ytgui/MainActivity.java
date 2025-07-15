@@ -19,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
   private static final String ENV_VERSION = "1.5.0";
   private static final String ZIP_URL =
     "https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v" + ENV_VERSION + ".zip";
+  private static final String PYTHON_PATH = "/ytgui-env/usr/bin/python3.13";
+  private static final String LD_LIBRARY_PATH = "/ytgui-env/usr/lib";
+  private static final String FFMPEG_PATH = "/ytgui-env/usr/bin/ffmpeg";
 
   private TextView consoleText;
   private Button nextButton;
@@ -78,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
         if (dst.exists()) dst.delete();
         src.renameTo(dst);
 
-        new File(dst, "/usr/bin/ffmpeg").setExecutable(true);
-        new File(dst, "/usr/bin/python3.13").setExecutable(true);
+        new File(dst, FFMPEG_PATH.substring(1)).setExecutable(true);
+        new File(dst, PYTHON_PATH.substring(1)).setExecutable(true);
 
         appendLine("ytgui-env установлен!");
         runOnUiThread(() -> nextButton.setEnabled(true));
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void runDownloader() {
-    File py = new File(getFilesDir(), "/ytgui-env/usr/bin/python3.13");
+    File py = new File(getFilesDir(), PYTHON_PATH);
     if (!py.exists()) {
       appendLine("Окружение [" + ENV_VERSION + "] повреждено.\nТребуется переустановка.");
       return;
@@ -104,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         pb.environment().put("PREFIX", env.getAbsolutePath());
         pb.environment().put("PATH", env.getAbsolutePath() + "/usr/bin:" + System.getenv("PATH"));
         pb.environment().put("LD_LIBRARY_PATH",
-          env.getAbsolutePath() + "/usr/lib:" + System.getenv("LD_LIBRARY_PATH"));
+          env.getAbsolutePath() + LD_LIBRARY_PATH + ":" + System.getenv("LD_LIBRARY_PATH"));
         pb.directory(env);
 
         Process proc = pb.start();
@@ -132,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private String[] buildCommand() {
-    String binPath = new File(getFilesDir(), "/ytgui-env/usr/bin/python3.13").getAbsolutePath();
+    String binPath = new File(getFilesDir(), PYTHON_PATH).getAbsolutePath();
     String[] cmd = new String[options.length + 3];
     cmd[0] = binPath;
     cmd[1] = "-m";
