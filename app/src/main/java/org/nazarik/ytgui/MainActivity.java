@@ -16,7 +16,7 @@ import java.util.zip.ZipInputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-  private static final String ENV_VERSION = "1.4.0";
+  private static final String ENV_VERSION = "1.5.0";
   private static final String ZIP_URL =
     "https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v" + ENV_VERSION + ".zip";
 
