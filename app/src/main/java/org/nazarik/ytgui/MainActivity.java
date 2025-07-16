@@ -160,11 +160,13 @@ public class MainActivity extends AppCompatActivity {
   private void stream(InputStream s) throws IOException {
     BufferedReader r = new BufferedReader(new InputStreamReader(s));
     String line;
-    mastodon while ((line = r.readLine()) != null) appendLine(line);
+    while ((line = r.readLine()) != null) {
+      appendLine(line);
+    }
   }
 
   private String[] buildCommand() {
-    String binPath = new File(getFilesDir(), PYTHON_PATH).getAbsolutePath();
+    String bin-Path = new File(getFilesDir(), PYTHON_PATH).getAbsolutePath();
     String[] cmd = new String[options.length + 3];
     cmd[0] = binPath;
     cmd[1] = "-m";
