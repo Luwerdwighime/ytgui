@@ -19,9 +19,9 @@ public class MainActivity extends AppCompatActivity {
   private static final String ENV_VERSION = "1.5.0";
   private static final String ZIP_URL =
     "https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v" + ENV_VERSION + ".zip";
-  private static final String PYTHON_PATH = "ytgui-env/usr/bin/python3.13";
-  private static final String LD_LIBRARY_PATH = "ytgui-env/usr/lib";
-  private static final String FFMPEG_PATH = "ytgui-env/usr/bin/ffmpeg";
+  private static final String PYTHON_PATH = "usr/bin/python3.13";
+  private static final String LD_LIBRARY_PATH = "usr/lib";
+  private static final String FFMPEG_PATH = "usr/bin/ffmpeg";
 
   private TextView consoleText;
   private Button nextButton;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void installEnv() {
-    File py = new File(getFilesDir(), PYTHON_PATH);
+    File py = new File(getFilesDir(), "ytgui-env/" + PYTHON_PATH);
     if (py.exists() && py.canExecute()) {
       appendLine("Окружение [" + ENV_VERSION + "] уже установлено и исполняемо.");
       runOnUiThread(() -> nextButton.setEnabled(true));
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void runDownloader() {
-    File py = new File(getFilesDir(), PYTHON_PATH);
+    File py = new File(getFilesDir(), "ytgui-env/" + PYTHON_PATH);
     if (!py.exists() || !py.canExecute()) {
       appendLine("Окружение [" + ENV_VERSION + "] повреждено или не исполняемо.\nТребуется переустановка.");
       return;
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private String[] buildCommand() {
-    String binPath = new File(getFilesDir(), PYTHON_PATH).getAbsolutePath();
+    String binPath = new File(getFilesDir(), "ytgui-env/" + PYTHON_PATH).getAbsolutePath();
     String[] cmd = new String[options.length + 3];
     cmd[0] = binPath;
     cmd[1] = "-m";
