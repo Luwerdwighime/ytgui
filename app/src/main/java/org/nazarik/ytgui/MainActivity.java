@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String ZIP_URL =
     "https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v" + ENV_VERSION + ".zip";
   private static final String PYTHON_PATH = "usr/bin/python3.13";
-  private static final String LD_LIBRARY_PATH = "usr/lib";
+  private static final String LD_LIBRARY_PATH = "usr/lib64";
   private static final String FFMPEG_PATH = "usr/bin/ffmpeg";
 
   private TextView consoleText;
@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
         appendLine("Распаковка ytgui-env...");
         unzip(zip, getFilesDir());
-
         zip.delete();
 
         // Переименование ytgui-env-1.5.0 → ytgui-env
@@ -91,27 +90,8 @@ public class MainActivity extends AppCompatActivity {
         // Установка прав на выполнение
         File pythonFile = new File(dst, PYTHON_PATH);
         File ffmpegFile = new File(dst, FFMPEG_PATH);
-
-        if (!pythonFile.exists()) {
-          appendLine("Ошибка: Python binary не найден: " + pythonFile.getAbsolutePath());
-          return;
-        }
-        if (!ffmpegFile.exists()) {
-          appendLine("Ошибка: FFmpeg binary не найден: " + ffmpegFile.getAbsolutePath());
-          return;
-        }
-
-        if (pythonFile.setExecutable(true, false)) {
-          appendLine("Python binary теперь исполняемый: " + pythonFile.getAbsolutePath());
-        } else {
-          appendLine("Ошибка: Не удалось установить права на выполнение для Python: " + pythonFile.getAbsolutePath());
-        }
-
-        if (ffmpegFile.setExecutable(true, false)) {
-          appendLine("FFmpeg binary теперь исполняемый: " + ffmpegFile.getAbsolutePath());
-        } else {
-          appendLine("Ошибка: Не удалось установить права на выполнение для FFmpeg: " + ffmpegFile.getAbsolutePath());
-        }
+        pythonFile.setExecutable(true, false);
+        ffmpegFile.setExecutable(true, false);
 
         appendLine("ytgui-env установлен!");
         runOnUiThread(() -> nextButton.setEnabled(true));
