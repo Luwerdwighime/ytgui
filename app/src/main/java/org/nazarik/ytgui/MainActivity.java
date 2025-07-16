@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private String[] buildCommand() {
-    String bin-Path = new File(getFilesDir(), PYTHON_PATH).getAbsolutePath();
+    String binPath = new File(getFilesDir(), PYTHON_PATH).getAbsolutePath();
     String[] cmd = new String[options.length + 3];
     cmd[0] = binPath;
     cmd[1] = "-m";
