@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String PYTHON_PATH = "usr/bin/python3.13";
   private static final String LD_LIBRARY_PATH = "usr/lib64";
   private static final String FFMPEG_PATH = "usr/bin/ffmpeg";
+  private static final String LD_SO_PATH = "lib64/ld-linux-aarch64.so.1";
 
   private TextView consoleText;
   private Button nextButton;
@@ -90,8 +91,55 @@ public class MainActivity extends AppCompatActivity {
         // Установка прав на выполнение
         File pythonFile = new File(dst, PYTHON_PATH);
         File ffmpegFile = new File(dst, FFMPEG_PATH);
-        pythonFile.setExecutable(true, false);
-        ffmpegFile.setExecutable(true, false);
+        File ldSoFile = new File(dst, LD_SO_PATH);
+        File libDir = new File(dst, LD_LIBRARY_PATH);
+
+        if (!pythonFile.exists()) {
+          appendLine("Ошибка: Python binary не найден: " + pythonFile.getAbsolutePath());
+          return;
+        }
+        if (!ffmpegFile.exists()) {
+          appendLine("Ошибка: FFmpeg binary не найден: " + ffmpegFile.getAbsolutePath());
+          return;
+        }
+        if (!ldSoFile.exists()) {
+          appendLine("Ошибка: Линковщик не найден: " + ldSoFile.getAbsolutePath());
+          return;
+        }
+        if (!libDir.exists() || !libDir.isDirectory()) {
+          appendLine("Ошибка: Папка библиотек не найдена: " + libDir.getAbsolutePath());
+          return;
+        }
+
+        // Установка прав на выполнение
+        if (pythonFile.setExecutable(true, false)) {
+          appendLine("Python binary теперь исполняемый: " + pythonFile.getAbsolutePath());
+        } else {
+          appendLine("Ошибка: Не удалось установить права на выполнение для Python: " + pythonFile.getAbsolutePath());
+        }
+
+        if (ffmpegFile.setExecutable(true, false)) {
+          appendLine("FFmpeg binary теперь исполняемый: " + ffmpegFile.getAbsolutePath());
+        } else {
+          appendLine("Ошибка: Не удалось установить права на выполнение для FFmpeg: " + ffmpegFile.getAbsolutePath());
+        }
+
+        if (ldSoFile.setExecutable(true, false)) {
+          appendLine("Линковщик теперь исполняемый: " + ldSoFile.getAbsolutePath());
+        } else {
+          appendLine("Ошибка: Не удалось установить права на выполнение для линковщика: " + ldSoFile.getAbsolutePath());
+        }
+
+        // Логирование содержимого usr/lib64
+        File[] libFiles = libDir.listFiles();
+        if (libFiles == null || libFiles.length == 0) {
+          appendLine("Предупреждение: Папка " + libDir.getAbsolutePath() + " пуста!");
+        } else {
+          appendLine("Найдены библиотеки в " + libDir.getAbsolutePath() + ":");
+          for (File lib : libFiles) {
+            appendLine("  - " + lib.getName());
+          }
+        }
 
         appendLine("ytgui-env установлен!");
         runOnUiThread(() -> nextButton.setEnabled(true));
@@ -103,8 +151,19 @@ public class MainActivity extends AppCompatActivity {
 
   private void runDownloader() {
     File py = new File(getFilesDir(), "ytgui-env/" + PYTHON_PATH);
+    File ldSo = new File(getFilesDir(), "ytgui-env/" + LD_SO_PATH);
+    File libDir = new File(getFilesDir(), "ytgui-env/" + LD_LIBRARY_PATH);
+
     if (!py.exists() || !py.canExecute()) {
       appendLine("Окружение [" + ENV_VERSION + "] повреждено или не исполняемо.\nТребуется переустановка.");
+      return;
+    }
+    if (!ldSo.exists() || !ldSo.canExecute()) {
+      appendLine("Линковщик повреждён или не исполняем: " + ldSo.getAbsolutePath() + "\nТребуется переустановка.");
+      return;
+    }
+    if (!libDir.exists() || !libDir.isDirectory()) {
+      appendLine("Ошибка: Папка библиотек не найдена: " + libDir.getAbsolutePath());
       return;
     }
 
@@ -119,12 +178,29 @@ public class MainActivity extends AppCompatActivity {
           env.getAbsolutePath() + "/" + LD_LIBRARY_PATH + ":" + System.getenv("LD_LIBRARY_PATH"));
         pb.directory(env);
 
+        // Проверка линковщика и Python
+        ProcessBuilder testPb = new ProcessBuilder(ldSo.getAbsolutePath(), py.getAbsolutePath(), "--version");
+        testPb.directory(env);
+        testPb.environment().put("LD_LIBRARY_PATH",
+          env.getAbsolutePath() + "/" + LD_LIBRARY_PATH + ":" + System.getenv("LD_LIBRARY_PATH"));
+        Process testProc = testPb.start();
+        StringBuilder testOutput = new StringBuilder();
+        stream(testProc.getInputStream(), testOutput);
+        stream(testProc.getErrorStream(), testOutput);
+        int testCode = testProc.waitFor();
+        if (testCode != 0) {
+          appendLine("Ошибка проверки Python через линковщик: код " + testCode);
+          appendLine("Вывод: " + testOutput.toString());
+        } else {
+          appendLine("Python версия: " + testOutput.toString());
+        }
+
         Process proc = pb.start();
-        stream(proc.getInputStream());
-        stream(proc.getErrorStream());
+        stream(proc.getInputStream(), null);
+        stream(proc.getErrorStream(), null);
         int code = proc.waitFor();
 
-        appendLine("Код завершения: " + code);
+        appendLine("Код завершения yt-dlp: " + code);
         if (code != 0) {
           appendLine("yt-dlp завершён с ошибкой.");
           runOnUiThread(() ->
@@ -137,21 +213,26 @@ public class MainActivity extends AppCompatActivity {
     }).start();
   }
 
-  private void stream(InputStream s) throws IOException {
+  private void stream(InputStream s, StringBuilder output) throws IOException {
     BufferedReader r = new BufferedReader(new InputStreamReader(s));
     String line;
     while ((line = r.readLine()) != null) {
       appendLine(line);
+      if (output != null) {
+        output.append(line).append("\n");
+      }
     }
   }
 
   private String[] buildCommand() {
+    String ldSoPath = new File(getFilesDir(), "ytgui-env/" + LD_SO_PATH).getAbsolutePath();
     String binPath = new File(getFilesDir(), "ytgui-env/" + PYTHON_PATH).getAbsolutePath();
-    String[] cmd = new String[options.length + 3];
-    cmd[0] = binPath;
-    cmd[1] = "-m";
-    cmd[2] = "yt_dlp";
-    System.arraycopy(options, 0, cmd, 3, options.length);
+    String[] cmd = new String[options.length + 4];
+    cmd[0] = ldSoPath;
+    cmd[1] = binPath;
+    cmd[2] = "-m";
+    cmd[3] = "yt_dlp";
+    System.arraycopy(options, 0, cmd, 4, options.length);
     return cmd;
   }
 
