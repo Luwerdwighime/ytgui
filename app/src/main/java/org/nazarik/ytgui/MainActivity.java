@@ -19,9 +19,9 @@ public class MainActivity extends AppCompatActivity {
   private static final String ENV_VERSION = "1.5.0";
   private static final String ZIP_URL =
     "https://github.com/Luwerdwighime/ytgui-env/archive/refs/tags/v" + ENV_VERSION + ".zip";
-  private static final String PYTHON_PATH = "/ytgui-env/usr/bin/python3.13";
-  private static final String LD_LIBRARY_PATH = "/ytgui-env/usr/lib";
-  private static final String FFMPEG_PATH = "/ytgui-env/usr/bin/ffmpeg";
+  private static final String PYTHON_PATH = "ytgui-env/usr/bin/python3.13";
+  private static final String LD_LIBRARY_PATH = "ytgui-env/usr/lib";
+  private static final String FFMPEG_PATH = "ytgui-env/usr/bin/ffmpeg";
 
   private TextView consoleText;
   private Button nextButton;
@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
   private void installEnv() {
     File py = new File(getFilesDir(), PYTHON_PATH);
-    if (py.exists()) {
-      appendLine("Окружение [" + ENV_VERSION + "] уже установлено.");
+    if (py.exists() && py.canExecute()) {
+      appendLine("Окружение [" + ENV_VERSION + "] уже установлено и исполняемо.");
       runOnUiThread(() -> nextButton.setEnabled(true));
       return;
     }
@@ -82,14 +82,36 @@ public class MainActivity extends AppCompatActivity {
 
         zip.delete();
 
-        // Переименование ytgui-env-1.4.0 → ytgui-env
+        // Переименование ytgui-env-1.5.0 → ytgui-env
         File src = new File(getFilesDir(), "ytgui-env-" + ENV_VERSION);
         File dst = new File(getFilesDir(), "ytgui-env");
         if (dst.exists()) dst.delete();
         src.renameTo(dst);
 
-        new File(dst, FFMPEG_PATH.substring(1)).setExecutable(true);
-        new File(dst, PYTHON_PATH.substring(1)).setExecutable(true);
+        // Установка прав на выполнение
+        File pythonFile = new File(dst, PYTHON_PATH);
+        File ffmpegFile = new File(dst, FFMPEG_PATH);
+
+        if (!pythonFile.exists()) {
+          appendLine("Ошибка: Python binary не найден: " + pythonFile.getAbsolutePath());
+          return;
+        }
+        if (!ffmpegFile.exists()) {
+          appendLine("Ошибка: FFmpeg binary не найден: " + ffmpegFile.getAbsolutePath());
+          return;
+        }
+
+        if (pythonFile.setExecutable(true, false)) {
+          appendLine("Python binary теперь исполняемый: " + pythonFile.getAbsolutePath());
+        } else {
+          appendLine("Ошибка: Не удалось установить права на выполнение для Python: " + pythonFile.getAbsolutePath());
+        }
+
+        if (ffmpegFile.setExecutable(true, false)) {
+          appendLine("FFmpeg binary теперь исполняемый: " + ffmpegFile.getAbsolutePath());
+        } else {
+          appendLine("Ошибка: Не удалось установить права на выполнение для FFmpeg: " + ffmpegFile.getAbsolutePath());
+        }
 
         appendLine("ytgui-env установлен!");
         runOnUiThread(() -> nextButton.setEnabled(true));
@@ -101,20 +123,20 @@ public class MainActivity extends AppCompatActivity {
 
   private void runDownloader() {
     File py = new File(getFilesDir(), PYTHON_PATH);
-    if (!py.exists()) {
-      appendLine("Окружение [" + ENV_VERSION + "] повреждено.\nТребуется переустановка.");
+    if (!py.exists() || !py.canExecute()) {
+      appendLine("Окружение [" + ENV_VERSION + "] повреждено или не исполняемо.\nТребуется переустановка.");
       return;
     }
 
     new Thread(() -> {
       try {
         ProcessBuilder pb = new ProcessBuilder(buildCommand());
-        File env = new File(getFilesDir(), "/ytgui-env");
+        File env = new File(getFilesDir(), "ytgui-env");
 
         pb.environment().put("PREFIX", env.getAbsolutePath());
         pb.environment().put("PATH", env.getAbsolutePath() + "/usr/bin:" + System.getenv("PATH"));
         pb.environment().put("LD_LIBRARY_PATH",
-          env.getAbsolutePath() + LD_LIBRARY_PATH + ":" + System.getenv("LD_LIBRARY_PATH"));
+          env.getAbsolutePath() + "/" + LD_LIBRARY_PATH + ":" + System.getenv("LD_LIBRARY_PATH"));
         pb.directory(env);
 
         Process proc = pb.start();
@@ -138,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
   private void stream(InputStream s) throws IOException {
     BufferedReader r = new BufferedReader(new InputStreamReader(s));
     String line;
-    while ((line = r.readLine()) != null) appendLine(line);
+    mastodon while ((line = r.readLine()) != null) appendLine(line);
   }
 
   private String[] buildCommand() {
