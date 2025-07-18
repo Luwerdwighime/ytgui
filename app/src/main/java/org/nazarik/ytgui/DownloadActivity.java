@@ -68,26 +68,30 @@ public class DownloadActivity extends AppCompatActivity {
   private void startDownload(int type) {
     String url = urlInput.getText().toString().trim();
     if (url.isEmpty()) {
-      Toast.makeText(this, R.string.toast_empty_url, Toast.LENGTH_SHORT).show();
+      Toast.makeText(this, "URL не может быть пустым", Toast.LENGTH_SHORT).show();
       return;
     }
+
+    // Получаем надёжный путь к внутренней директории files
+    String cachePath = getFilesDir().getAbsolutePath();
 
     String[] opts;
     switch (type) {
       case 0:
-        opts = buildVideoOptions(url, bestVideoVideo, bestAudioVideo);
+        opts = buildVideoOptions(url, bestVideoVideo, bestAudioVideo, cachePath);
         break;
       case 1:
-        opts = buildAudioOptions(url, bestAudioAudio);
+        opts = buildAudioOptions(url, bestAudioAudio, cachePath);
         break;
       case 2:
-        opts = buildVideoPlaylistOptions(url, bestVideoVideoPl, bestAudioVideoPl);
+        opts = buildVideoPlaylistOptions(url, bestVideoVideoPl, bestAudioVideoPl, cachePath);
         break;
       case 3:
-        opts = buildAudioPlaylistOptions(url, bestAudioAudioPl);
+        opts = buildAudioPlaylistOptions(url, bestAudioAudioPl, cachePath);
         break;
       default:
-        opts = new String[]{url};
+        // На всякий случай, если будет вызван с неправильным типом
+        opts = new String[]{ "--cache-dir", cachePath, url };
     }
 
     Intent intent = new Intent(this, MainActivity.class);
@@ -95,9 +99,10 @@ public class DownloadActivity extends AppCompatActivity {
     startActivity(intent);
   }
 
-  private String[] buildVideoOptions(String url, boolean bv, boolean ba) {
+  private String[] buildVideoOptions(String url, boolean bv, boolean ba, String cachePath) {
     if (!bv && !ba) {
-      return new String[] {
+      return new String[]{
+        "--cache-dir", cachePath,
         "-o", "/storage/emulated/0/Documents/ytVideo/%(title)s.%(ext)s",
         url
       };
@@ -107,31 +112,35 @@ public class DownloadActivity extends AppCompatActivity {
       : bv ? "bestvideo"
       : "bestaudio";
 
-    return new String[] {
+    return new String[]{
+      "--cache-dir", cachePath,
       "-f", format,
       "-o", "/storage/emulated/0/Documents/ytVideo/%(title)s.%(ext)s",
       url
     };
   }
 
-  private String[] buildAudioOptions(String url, boolean ba) {
+  private String[] buildAudioOptions(String url, boolean ba, String cachePath) {
     if (!ba) {
-      return new String[] {
+      return new String[]{
+        "--cache-dir", cachePath,
         "-o", "/storage/emulated/0/Documents/ytAudio/%(title)s.%(ext)s",
         url
       };
     }
 
-    return new String[] {
+    return new String[]{
+      "--cache-dir", cachePath,
       "-f", "bestaudio",
       "-o", "/storage/emulated/0/Documents/ytAudio/%(title)s.%(ext)s",
       url
     };
   }
 
-  private String[] buildVideoPlaylistOptions(String url, boolean bv, boolean ba) {
+  private String[] buildVideoPlaylistOptions(String url, boolean bv, boolean ba, String cachePath) {
     if (!bv && !ba) {
-      return new String[] {
+      return new String[]{
+        "--cache-dir", cachePath,
         "--yes-playlist",
         "-o", "/storage/emulated/0/Documents/ytVideo/%(playlist)s/%(title)s.%(ext)s",
         url
@@ -142,7 +151,8 @@ public class DownloadActivity extends AppCompatActivity {
       : bv ? "bestvideo"
       : "bestaudio";
 
-    return new String[] {
+    return new String[]{
+      "--cache-dir", cachePath,
       "--yes-playlist",
       "-f", format,
       "-o", "/storage/emulated/0/Documents/ytVideo/%(playlist)s/%(title)s.%(ext)s",
@@ -150,16 +160,18 @@ public class DownloadActivity extends AppCompatActivity {
     };
   }
 
-  private String[] buildAudioPlaylistOptions(String url, boolean ba) {
+  private String[] buildAudioPlaylistOptions(String url, boolean ba, String cachePath) {
     if (!ba) {
-      return new String[] {
+      return new String[]{
+        "--cache-dir", cachePath,
         "--yes-playlist",
         "-o", "/storage/emulated/0/Documents/ytAudio/%(playlist)s/%(title)s.%(ext)s",
         url
       };
     }
 
-    return new String[] {
+    return new String[]{
+      "--cache-dir", cachePath,
       "--yes-playlist",
       "-f", "bestaudio",
       "-o", "/storage/emulated/0/Documents/ytAudio/%(playlist)s/%(title)s.%(ext)s",
@@ -167,4 +179,5 @@ public class DownloadActivity extends AppCompatActivity {
     };
   }
 }
+
 

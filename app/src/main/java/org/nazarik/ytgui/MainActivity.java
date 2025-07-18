@@ -231,41 +231,16 @@ public class MainActivity extends AppCompatActivity {
                 // Добавляем нашу папку 'bin' в PATH. Это позволяет системе найти 'python3.12' и 'ffmpeg'.
                 pb.environment().put("PATH",
                         env.getAbsolutePath() + "/bin:" + // Наша папка bin
-                        System.getenv("PATH")); // Существующий системный PATH
+                                System.getenv("PATH")); // Существующий системный PATH
 
                 // Добавляем нашу папку 'lib' в LD_LIBRARY_PATH. Это указывает Bionic,
                 // где искать динамические библиотеки, необходимые для наших бинарников.
                 pb.environment().put("LD_LIBRARY_PATH",
                         env.getAbsolutePath() + "/" + LD_LIBRARY_PATH + ":" + // Наша папка lib
-                        System.getenv("LD_LIBRARY_PATH")); // Существующий системный LD_LIBRARY_PATH
+                                System.getenv("LD_LIBRARY_PATH")); // Существующий системный LD_LIBRARY_PATH
 
                 // Также можно установить PREFIX, хотя PATH и LD_LIBRARY_PATH обычно достаточно
                 pb.environment().put("PREFIX", env.getAbsolutePath());
-
-                // --- Проверка версии Python ---
-                appendLine("Проверка версии Python...");
-                // Создаем отдельный ProcessBuilder для запуска Python с флагом --version
-                ProcessBuilder testPb = new ProcessBuilder(py.getAbsolutePath(), "--version");
-                testPb.directory(env); // Рабочая директория
-                // Передаем те же переменные окружения, что и для основного запуска
-                testPb.environment().put("PATH", pb.environment().get("PATH"));
-                testPb.environment().put("LD_LIBRARY_PATH", pb.environment().get("LD_LIBRARY_PATH"));
-                Process testProc = testPb.start(); // Запускаем тестовый процесс
-                StringBuilder testOutput = new StringBuilder(); // Для сбора вывода
-                stream(testProc.getInputStream(), testOutput); // Читаем стандартный вывод
-                stream(testProc.getErrorStream(), testOutput); // Читаем вывод ошибок
-                int testCode = testProc.waitFor(); // Ждем завершения тестового процесса
-
-                if (testCode != 0) {
-                    appendLine("Ошибка проверки Python: код " + testCode);
-                    appendLine("Вывод: " + testOutput.toString());
-                    runOnUiThread(() ->
-                            Toast.makeText(this, "Ошибка: Python не запускается", Toast.LENGTH_LONG).show());
-                    runOnUiThread(() -> nextButton.setEnabled(true)); // Активируем кнопку даже при ошибке
-                    return; // Выходим, так как Python не работает
-                } else {
-                    appendLine("Python успешно запущен. Версия: " + testOutput.toString().trim());
-                }
 
                 // --- Запуск основного процесса yt-dlp ---
                 appendLine("Запуск yt-dlp...");
