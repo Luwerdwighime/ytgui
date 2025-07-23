@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">YTGUI</string>
+    <string name="app_name">YouTube GUI</string>
 
-  <!-- MainActivity -->
-  <string name="console_hint">Хакерская консоль запуска</string>
-  <string name="next_button">Далее</string>
+    <string name="main_activity_initial_text">Добро пожаловать в yt-dlp GUI! 🥳\n</string>
+    <string name="next_button_text">Далее</string>
+    <string name="environment_download_start">Качаем yt-dlp [%1$s]... ~%2$dМб</string>
+    <string name="environment_download_progress">Прогресс скачивания: %1$d%%</string>
+    <string name="environment_unzip_start">Распаковка ytgui-env...</string>
+    <string name="environment_unzip_progress">Прогресс распаковки: %1$d%%</string>
+    <string name="environment_setup_complete">ytgui-env установлен! Готов к работе! 💪</string>
+    <string name="environment_setup_error">Ошибка при настройке окружения: %1$s</string>
+    <string name="environment_corrupted">Окружение [%1$s] повреждено или не исполняемо.\nТребуется переустановка этой программы.</string>
+    <string name="environment_corrupted_toast">Окружение повреждено, требуется переустановка программы</string>
+    <string name="environment_already_installed">Окружение [%1$s] уже установлено и готово к работе! ✅</string>
+    <string name="ffmpeg_not_found_warning">Внимание: FFmpeg не найден по пути %1$s. Это может вызвать проблемы с некоторыми форматами.</string>
+    <string name="permission_denied_toast">Разрешение на доступ к файлам отклонено. Приложение не сможет сохранять скачанный контент. 😔</string>
+    <string name="download_complete_toast">Загрузка завершена! 🎉</string>
+    <string name="error_executing_yt_dlp">Ошибка при выполнении yt-dlp: %1$s 😭</string>
 
-  <!-- DownloadActivity -->
-  <string name="url_hint">Введите URL</string>
-  <string name="paste_button">📋</string>
-  <string name="video_button">Скачать видео</string>
-  <string name="audio_button">Скачать аудио</string>
-  <string name="video_playlist_button">Скачать видео плейлист</string>
-  <string name="audio_playlist_button">Скачать аудио плейлист</string>
-  <string name="gear_button">⚙️</string>
-  <string name="options_dialog_title">Опции</string>
-  <string name="bestvideo">bestvideo</string>
-  <string name="bestaudio">bestaudio</string>
-  <string name="warning_text">⚠️ bestvideo+bestaudio может качать 2 файла</string>
-  <string name="toast_empty_url">Введите URL</string>
+    <string name="url_input_hint">Введите URL 🔗</string>
+    <string name="paste_button_desc">Вставить из буфера обмена</string>
+    <string name="download_video_button">Скачать видео 🎬</string>
+    <string name="download_audio_button">Скачать аудио 🎧</string>
+    <string name="download_video_playlist_button">Скачать видео плейлист 🎞️</string>
+    <string name="download_audio_playlist_button">Скачать аудио плейлист 🎶</string>
+    <string name="options_button_desc">Опции загрузки</string>
+    <string name="url_missing_toast">URL не может быть пустым. Пожалуйста, введите URL. 🙏</string>
+
+    <string name="options_dialog_title">Опции ⚙️</string>
+    <string name="checkbox_bestvideo">bestvideo</string>
+    <string name="checkbox_bestaudio">bestaudio</string>
+    <string name="options_dialog_warning">⚠️ bestvideo+bestaudio может качать по 2 файла</string>
+    <string name="ok_button_text">ОК</string>
+
 </resources>
 

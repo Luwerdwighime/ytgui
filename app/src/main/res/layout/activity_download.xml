@@ -1,145 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="?android:windowBackground"
-  android:padding="8dp"
-  android:fillViewport="true">
-
-  <LinearLayout
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    tools:context=".DownloadActivity">
 
-    <!-- Ввод URL + Вставка -->
     <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:padding="4dp"
-      android:background="@color/backgroundDark">
-
-      <EditText
-        android:id="@+id/urlInput"
+        android:id="@+id/urlInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:hint="@string/url_hint"
-        android:inputType="textUri"
-        android:padding="6dp"
-        android:textColor="@color/textSecondary"
-        android:background="@android:color/transparent" />
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-      <Button
-        android:id="@+id/pasteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/paste_button"
-        android:backgroundTint="?attr/colorAccent"
-        android:onClick="onPasteClicked" />
+        <EditText
+            android:id="@+id/urlEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/url_input_hint"
+            android:inputType="textUri"
+            android:minHeight="48dp"
+            android:autofillHints="url"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <ImageButton
+            android:id="@+id/pasteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/paste_button_desc"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:src="@android:drawable/ic_menu_edit"
+            app:tint="?attr/colorPrimary"
+            tools:ignore="MissingTint" />
     </LinearLayout>
 
-    <!-- Кнопки загрузки -->
-    <LinearLayout
-      android:orientation="vertical"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:paddingTop="12dp"
-      android:gravity="center_horizontal">
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/urlInputLayout">
 
-      <!-- Видео -->
-      <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
 
-        <Button
-          android:id="@+id/videoButton"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:text="@string/video_button"
-          android:backgroundTint="?attr/colorPrimary" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
 
-        <Button
-          android:id="@+id/videoGear"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/gear_button"
-          android:layout_marginStart="8dp" />
-      </LinearLayout>
+                <Button
+                    android:id="@+id/downloadVideoButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/download_video_button" />
 
-      <!-- Аудио -->
-      <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+                <ImageButton
+                    android:id="@+id/videoOptionsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/options_button_desc"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:src="@android:drawable/ic_menu_preferences"
+                    app:tint="?attr/colorPrimary" />
+            </LinearLayout>
 
-        <Button
-          android:id="@+id/audioButton"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:text="@string/audio_button"
-          android:backgroundTint="?attr/colorPrimary" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
 
-        <Button
-          android:id="@+id/audioGear"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/gear_button"
-          android:layout_marginStart="8dp" />
-      </LinearLayout>
+                <Button
+                    android:id="@+id/downloadAudioButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/download_audio_button" />
 
-      <!-- Видеоплейлист -->
-      <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+                <ImageButton
+                    android:id="@+id/audioOptionsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/options_button_desc"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:src="@android:drawable/ic_menu_preferences"
+                    app:tint="?attr/colorPrimary" />
+            </LinearLayout>
 
-        <Button
-          android:id="@+id/videoPlaylistButton"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:text="@string/video_playlist_button"
-          android:backgroundTint="?attr/colorPrimary" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
 
-        <Button
-          android:id="@+id/videoPlaylistGear"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/gear_button"
-          android:layout_marginStart="8dp" />
-      </LinearLayout>
+                <Button
+                    android:id="@+id/downloadVideoPlaylistButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/download_video_playlist_button" />
 
-      <!-- Аудиоплейлист -->
-      <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+                <ImageButton
+                    android:id="@+id/videoPlaylistOptionsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/options_button_desc"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:src="@android:drawable/ic_menu_preferences"
+                    app:tint="?attr/colorPrimary" />
+            </LinearLayout>
 
-        <Button
-          android:id="@+id/audioPlaylistButton"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:text="@string/audio_playlist_button"
-          android:backgroundTint="?attr/colorPrimary" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
 
-        <Button
-          android:id="@+id/audioPlaylistGear"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/gear_button"
-          android:layout_marginStart="8dp" />
-      </LinearLayout>
+                <Button
+                    android:id="@+id/downloadAudioPlaylistButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/download_audio_playlist_button" />
 
-    </LinearLayout>
-  </LinearLayout>
-</ScrollView>
+                <ImageButton
+                    android:id="@+id/audioPlaylistOptionsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/options_button_desc"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:src="@android:drawable/ic_menu_preferences"
+                    app:tint="?attr/colorPrimary" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

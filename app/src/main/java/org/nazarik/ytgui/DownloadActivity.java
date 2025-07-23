@@ -5,187 +5,230 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
+
 public class DownloadActivity extends AppCompatActivity {
 
-    private EditText urlInput;
+  private EditText urlEditText;
+  private Button downloadVideoButton, downloadAudioButton, downloadVideoPlaylistButton,
+      downloadAudioPlaylistButton;
+  private ImageButton pasteButton;
+  private ImageButton videoOptionsButton, audioOptionsButton, videoPlaylistOptionsButton,
+      audioPlaylistOptionsButton;
 
-    private boolean bestVideoVideo = false, bestAudioVideo = false;
-    private boolean bestAudioAudio = false;
-    private boolean bestVideoVideoPl = false, bestAudioVideoPl = false;
-    private boolean bestAudioAudioPl = false;
+  // Флаги для опций (для каждой кнопки свои)
+  private boolean videoBestVideo = false;
+  private boolean videoBestAudio = false;
+  private boolean audioBestAudio = false;
+  private boolean videoPlaylistBestVideo = false;
+  private boolean videoPlaylistBestAudio = false;
+  private boolean audioPlaylistBestAudio = false;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_download);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_download);
 
-        urlInput = findViewById(R.id.urlInput);
+    initViews();
+    setupListeners();
+  }
 
-        findViewById(R.id.videoGear).setOnClickListener(v ->
-                OptionsDialog.showVideoDialog(this, (bv, ba) -> {
-                    bestVideoVideo = bv;
-                    bestAudioVideo = ba;
-                }));
+  /**
+   * Инициализирует все View-элементы.
+   */
+  private void initViews() {
+    urlEditText = findViewById(R.id.urlEditText);
+    downloadVideoButton = findViewById(R.id.downloadVideoButton);
+    downloadAudioButton = findViewById(R.id.downloadAudioButton);
+    downloadVideoPlaylistButton = findViewById(R.id.downloadVideoPlaylistButton);
+    downloadAudioPlaylistButton = findViewById(R.id.downloadAudioPlaylistButton);
+    pasteButton = findViewById(R.id.pasteButton);
 
-        findViewById(R.id.audioGear).setOnClickListener(v ->
-                OptionsDialog.showAudioDialog(this, (bv, ba) -> {
-                    bestAudioAudio = ba;
-                }));
+    videoOptionsButton = findViewById(R.id.videoOptionsButton);
+    audioOptionsButton = findViewById(R.id.audioOptionsButton);
+    videoPlaylistOptionsButton = findViewById(R.id.videoPlaylistOptionsButton);
+    audioPlaylistOptionsButton = findViewById(R.id.audioPlaylistOptionsButton);
+  }
 
-        findViewById(R.id.videoPlaylistGear).setOnClickListener(v ->
-                OptionsDialog.showVideoDialog(this, (bv, ba) -> {
-                    bestVideoVideoPl = bv;
-                    bestAudioVideoPl = ba;
-                }));
+  /**
+   * Настраивает слушателей для кнопок.
+   */
+  private void setupListeners() {
+    pasteButton.setOnClickListener(v -> pasteFromClipboard());
 
-        findViewById(R.id.audioPlaylistGear).setOnClickListener(v ->
-                OptionsDialog.showAudioDialog(this, (bv, ba) -> {
-                    bestAudioAudioPl = ba;
-                }));
+    downloadVideoButton.setOnClickListener(v -> startDownload(DownloadType.VIDEO));
+    downloadAudioButton.setOnClickListener(v -> startDownload(DownloadType.AUDIO));
+    downloadVideoPlaylistButton.setOnClickListener(v -> startDownload(DownloadType.VIDEO_PLAYLIST));
+    downloadAudioPlaylistButton.setOnClickListener(v -> startDownload(DownloadType.AUDIO_PLAYLIST));
 
-        findViewById(R.id.videoButton).setOnClickListener(v -> startDownload(0));
-        findViewById(R.id.audioButton).setOnClickListener(v -> startDownload(1));
-        findViewById(R.id.videoPlaylistButton).setOnClickListener(v -> startDownload(2));
-        findViewById(R.id.audioPlaylistButton).setOnClickListener(v -> startDownload(3));
+    videoOptionsButton.setOnClickListener(v -> showOptionsDialog(DownloadType.VIDEO));
+    audioOptionsButton.setOnClickListener(v -> showOptionsDialog(DownloadType.AUDIO));
+    videoPlaylistOptionsButton.setOnClickListener(v -> showOptionsDialog(DownloadType.VIDEO_PLAYLIST));
+    audioPlaylistOptionsButton.setOnClickListener(v -> showOptionsDialog(DownloadType.AUDIO_PLAYLIST));
+  }
+
+  /**
+   * Вставляет текст из буфера обмена в поле ввода URL.
+   */
+  private void pasteFromClipboard() {
+    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+    if (clipboard != null && clipboard.hasPrimaryClip()) {
+      ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+      if (item != null && item.getText() != null) {
+        urlEditText.setText(item.getText());
+      }
+    }
+  }
+
+  /**
+   * Запускает процесс скачивания, формируя опции для yt-dlp и передавая их в MainActivity.
+   *
+   * @param type Тип загрузки (видео, аудио, плейлист).
+   */
+  private void startDownload(DownloadType type) {
+    String url = urlEditText.getText().toString().trim();
+    if (TextUtils.isEmpty(url)) {
+      Toast.makeText(this, R.string.url_missing_toast, Toast.LENGTH_SHORT).show();
+      return;
     }
 
-    public void onPasteClicked(View v) {
-        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        if (cm != null && cm.getPrimaryClip() != null) {
-            ClipData clip = cm.getPrimaryClip();
-            if (clip.getItemCount() > 0) {
-                urlInput.setText(clip.getItemAt(0).coerceToText(this));
-            }
+    ArrayList<String> options = new ArrayList<>();
+
+    // Папки для временного сохранения внутри filesDir()
+    // yt-dlp будет скачивать сюда, а MainActivity затем переместит в Documents.
+    String videoTempPath = getFilesDir().getAbsolutePath() + "/ytvideo";
+    String audioTempPath = getFilesDir().getAbsolutePath() + "/ytaudio";
+
+    options.add("-o"); // Опция для выходного файла/директории
+    // yt-dlp сам создаст поддиректорию с названием плейлиста, если указан %(playlist_title)s
+    // MainActivity потом рекурсивно переместит все содержимое этих временных папок.
+
+    switch (type) {
+      case VIDEO:
+        options.add(videoTempPath + "/%(title)s.%(ext)s");
+        if (videoBestVideo && videoBestAudio) {
+          options.add("-f");
+          options.add("bestvideo+bestaudio");
+        } else if (videoBestVideo) {
+          options.add("-f");
+          options.add("bestvideo");
+        } else if (videoBestAudio) {
+          options.add("-f");
+          options.add("bestaudio");
+          options.add("--extract-audio"); // Для bestaudio без bestvideo, извлекаем аудио
         }
+        break;
+      case AUDIO:
+        options.add(audioTempPath + "/%(title)s.%(ext)s");
+        options.add("-x"); // Извлечь аудио
+        options.add("--audio-format"); // Формат аудио (mp3, aac, opus, vorbis, wav)
+        options.add("mp3"); // По умолчанию mp3, можно дать юзеру выбор в диалоге
+        if (audioBestAudio) {
+          options.add("-f");
+          options.add("bestaudio");
+        }
+        break;
+      case VIDEO_PLAYLIST:
+        options.add(videoTempPath + "/%(playlist_title)s/%(title)s.%(ext)s");
+        options.add("--yes-playlist");
+        if (videoPlaylistBestVideo && videoPlaylistBestAudio) {
+          options.add("-f");
+          options.add("bestvideo+bestaudio");
+        } else if (videoPlaylistBestVideo) {
+          options.add("-f");
+          options.add("bestvideo");
+        } else if (videoPlaylistBestAudio) {
+          options.add("-f");
+          options.add("bestaudio");
+          options.add("--extract-audio");
+        }
+        break;
+      case AUDIO_PLAYLIST:
+        options.add(audioTempPath + "/%(playlist_title)s/%(title)s.%(ext)s");
+        options.add("--yes-playlist");
+        options.add("-x"); // Извлечь аудио
+        options.add("--audio-format");
+        options.add("mp3"); // По умолчанию mp3
+        if (audioPlaylistBestAudio) {
+          options.add("-f");
+          options.add("bestaudio");
+        }
+        break;
     }
 
-    private void startDownload(int type) {
-        String url = urlInput.getText().toString().trim();
-        if (url.isEmpty()) {
-            Toast.makeText(this, "URL не может быть пустым", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    options.add(url); // URL всегда последним
 
-        // --- Получаем пути к важным компонентам ---
-        String baseFilesPath = getFilesDir().getAbsolutePath();
-        String cachePath = baseFilesPath; // Кэш в корневой папке files
-        String ffmpegPath = baseFilesPath + "/ytgui-env/bin/ffmpeg"; // Путь к ffmpeg
+    Intent intent = new Intent(DownloadActivity.this, MainActivity.class);
+    intent.putStringArrayListExtra("options", options); // Передаем ArrayList
+    startActivity(intent);
+    finish(); // Закрываем DownloadActivity
+  }
 
-        String[] opts;
-        switch (type) {
-            case 0:
-                opts = buildVideoOptions(url, bestVideoVideo, bestAudioVideo, cachePath, ffmpegPath);
-                break;
-            case 1:
-                opts = buildAudioOptions(url, bestAudioAudio, cachePath, ffmpegPath);
-                break;
-            case 2:
-                opts = buildVideoPlaylistOptions(url, bestVideoVideoPl, bestAudioVideoPl, cachePath, ffmpegPath);
-                break;
-            case 3:
-                opts = buildAudioPlaylistOptions(url, bestAudioAudioPl, cachePath, ffmpegPath);
-                break;
-            default:
-                opts = new String[]{ "--cache-dir", cachePath, "--ffmpeg-location", ffmpegPath, url };
-        }
+  /**
+   * Показывает диалог опций для выбранного типа загрузки.
+   *
+   * @param type Тип загрузки.
+   */
+  private void showOptionsDialog(DownloadType type) {
+    OptionsDialog dialog = new OptionsDialog(this, type);
 
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("options", opts);
-        startActivity(intent);
+    // Устанавливаем текущие значения чекбоксов
+    switch (type) {
+      case VIDEO:
+        dialog.setBestVideoChecked(videoBestVideo);
+        dialog.setBestAudioChecked(videoBestAudio);
+        break;
+      case AUDIO:
+        dialog.setBestAudioChecked(audioBestAudio);
+        break;
+      case VIDEO_PLAYLIST:
+        dialog.setBestVideoChecked(videoPlaylistBestVideo);
+        dialog.setBestAudioChecked(videoPlaylistBestAudio);
+        break;
+      case AUDIO_PLAYLIST:
+        dialog.setBestAudioChecked(audioPlaylistBestAudio);
+        break;
     }
 
-    private String[] buildVideoOptions(String url, boolean bv, boolean ba, String cachePath, String ffmpegPath) {
-        if (!bv && !ba) {
-            return new String[]{
-                    "--cache-dir", cachePath,
-                    "--ffmpeg-location", ffmpegPath,
-                    "-o", "/storage/emulated/0/Documents/ytVideo/%(title)s.%(ext)s",
-                    url
-            };
-        }
+    dialog.setOnOptionsSelectedListener((bestVideo, bestAudio) -> {
+      switch (type) {
+        case VIDEO:
+          videoBestVideo = bestVideo;
+          videoBestAudio = bestAudio;
+          break;
+        case AUDIO:
+          audioBestAudio = bestAudio;
+          break;
+        case VIDEO_PLAYLIST:
+          videoPlaylistBestVideo = bestVideo;
+          videoPlaylistBestAudio = bestAudio;
+          break;
+        case AUDIO_PLAYLIST:
+          audioPlaylistBestAudio = bestAudio;
+          break;
+      }
+    });
+    dialog.show();
+  }
 
-        String format = bv && ba ? "bestvideo+bestaudio"
-                : bv ? "bestvideo"
-                : "bestaudio";
-
-        return new String[]{
-                "--cache-dir", cachePath,
-                "--ffmpeg-location", ffmpegPath,
-                "-f", format,
-                "-o", "/storage/emulated/0/Documents/ytVideo/%(title)s.%(ext)s",
-                url
-        };
-    }
-
-    private String[] buildAudioOptions(String url, boolean ba, String cachePath, String ffmpegPath) {
-        if (!ba) {
-            return new String[]{
-                    "--cache-dir", cachePath,
-                    "--ffmpeg-location", ffmpegPath,
-                    "-o", "/storage/emulated/0/Documents/ytAudio/%(title)s.%(ext)s",
-                    url
-            };
-        }
-
-        return new String[]{
-                "--cache-dir", cachePath,
-                "--ffmpeg-location", ffmpegPath,
-                "-f", "bestaudio",
-                "-o", "/storage/emulated/0/Documents/ytAudio/%(title)s.%(ext)s",
-                url
-        };
-    }
-
-    private String[] buildVideoPlaylistOptions(String url, boolean bv, boolean ba, String cachePath, String ffmpegPath) {
-        if (!bv && !ba) {
-            return new String[]{
-                    "--cache-dir", cachePath,
-                    "--ffmpeg-location", ffmpegPath,
-                    "--yes-playlist",
-                    "-o", "/storage/emulated/0/Documents/ytVideo/%(playlist)s/%(title)s.%(ext)s",
-                    url
-            };
-        }
-
-        String format = bv && ba ? "bestvideo+bestaudio"
-                : bv ? "bestvideo"
-                : "bestaudio";
-
-        return new String[]{
-                "--cache-dir", cachePath,
-                "--ffmpeg-location", ffmpegPath,
-                "--yes-playlist",
-                "-f", format,
-                "-o", "/storage/emulated/0/Documents/ytVideo/%(playlist)s/%(title)s.%(ext)s",
-                url
-        };
-    }
-
-    private String[] buildAudioPlaylistOptions(String url, boolean ba, String cachePath, String ffmpegPath) {
-        if (!ba) {
-            return new String[]{
-                    "--cache-dir", cachePath,
-                    "--ffmpeg-location", ffmpegPath,
-                    "--yes-playlist",
-                    "-o", "/storage/emulated/0/Documents/ytAudio/%(playlist)s/%(title)s.%(ext)s",
-                    url
-            };
-        }
-
-        return new String[]{
-                "--cache-dir", cachePath,
-                "--ffmpeg-location", ffmpegPath,
-                "--yes-playlist",
-                "-f", "bestaudio",
-                "-o", "/storage/emulated/0/Documents/ytAudio/%(playlist)s/%(title)s.%(ext)s",
-                url
-        };
-    }
+  /**
+   * Перечисление для типов загрузки.
+   */
+  public enum DownloadType {
+    VIDEO,
+    AUDIO,
+    VIDEO_PLAYLIST,
+    AUDIO_PLAYLIST
+  }
 }
+
 
