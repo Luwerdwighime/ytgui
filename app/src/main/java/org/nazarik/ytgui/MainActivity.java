@@ -67,14 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
     consoleTextView = findViewById(R.id.consoleTextView);
     consoleTextView.setMovementMethod(new ScrollingMovementMethod());
-    // Автоматическая прокрутка вниз при изменении текста
-    consoleTextView.post(() -> {
-      final int scrollAmount = consoleTextView.getLayout().getLineTop(
-          consoleTextView.getLineCount()) - consoleTextView.getHeight();
-      if (scrollAmount > 0) {
-        consoleTextView.scrollTo(0, scrollAmount);
-      }
-    });
+    // Убираем изначальную прокрутку, так как TextView может быть пустым.
+    // Прокрутка будет происходить в appendLog после добавления текста.
 
     nextButton = findViewById(R.id.nextButton);
     nextButton.setEnabled(false); // Кнопка неактивна по умолчанию
@@ -182,11 +176,13 @@ public class MainActivity extends AppCompatActivity {
   private void appendLog(final String message) {
     runOnUiThread(() -> {
       consoleTextView.append(message + "\n");
-      // Прокрутка к последней строке
-      final int scrollAmount = consoleTextView.getLayout().getLineTop(
-          consoleTextView.getLineCount()) - consoleTextView.getHeight();
-      if (scrollAmount > 0) {
-        consoleTextView.scrollTo(0, scrollAmount);
+      // Прокрутка к последней строке только если Layout уже существует и текст есть
+      if (consoleTextView.getLayout() != null) { // ДОБАВЛЕНА ПРОВЕРКА НА NULL
+        final int scrollAmount = consoleTextView.getLayout().getLineTop(
+            consoleTextView.getLineCount()) - consoleTextView.getHeight();
+        if (scrollAmount > 0) {
+          consoleTextView.scrollTo(0, scrollAmount);
+        }
       }
     });
   }
@@ -609,7 +605,7 @@ public class MainActivity extends AppCompatActivity {
             OutputStream out = new FileOutputStream(destination)) {
           byte[] buffer = new byte[4096];
           int length;
-          while ((length = in.read(buffer)) > 0) {
+          while ((length = in.read(buffer)) > -1) { // Изменено с > 0 на > -1 для корректной обработки последнего чтения
             out.write(buffer, 0, length);
           }
         }
