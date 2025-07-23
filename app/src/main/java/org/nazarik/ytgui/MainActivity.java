@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     consoleTextView = findViewById(R.id.consoleTextView);
     consoleTextView.setMovementMethod(new ScrollingMovementMethod());
-    // Убираем изначальную прокрутку, так как TextView может быть пустым.
+    // Убрали изначальную прокрутку, так как TextView может быть пустым.
     // Прокрутка будет происходить в appendLog после добавления текста.
 
     nextButton = findViewById(R.id.nextButton);
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()) {
               appendLog("Разрешение на управление всеми файлами получено! ✅");
-              startOperation();
+              startOperation(); // startOperation вызывается только после получения разрешения
             } else {
               appendLog("Разрешение на управление всеми файлами отклонено 😥");
               Toast.makeText(this, R.string.permission_denied_toast, Toast.LENGTH_LONG).show();
@@ -94,9 +94,10 @@ public class MainActivity extends AppCompatActivity {
     if (intent != null && intent.hasExtra("options")) {
       ytDlpOptions = intent.getStringArrayListExtra("options"); // Получаем ArrayList
       // Режим закачки: сначала проверяем и запрашиваем разрешения
+      // startOperation() будет вызван в checkAndRequestPermissions() или в onRequestPermissionsResult/manageStoragePermissionLauncher
       checkAndRequestPermissions();
     } else {
-      // Режим инициализации: сразу запускаем операцию
+      // Режим инициализации: сразу запускаем операцию (разрешения на запись тут не нужны для скачивания окружения)
       startOperation();
     }
 
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         manageStoragePermissionLauncher.launch(intent);
       } else {
         appendLog("Разрешение на управление всеми файлами уже есть. ✅");
-        startOperation();
+        startOperation(); // startOperation вызывается только после получения разрешения
       }
     } else {
       // Для Android 9 (API 28) и ниже
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1001);
       } else {
         appendLog("Разрешение на запись в хранилище уже есть. ✅");
-        startOperation();
+        startOperation(); // startOperation вызывается только после получения разрешения
       }
     }
   }
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
     if (requestCode == 1001) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         appendLog("Разрешение на запись в хранилище получено! ✅");
-        startOperation();
+        startOperation(); // startOperation вызывается только после получения разрешения
       } else {
         appendLog("Разрешение на запись в хранилище отклонено 😥");
         Toast.makeText(this, R.string.permission_denied_toast, Toast.LENGTH_LONG).show();
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
     runOnUiThread(() -> {
       consoleTextView.append(message + "\n");
       // Прокрутка к последней строке только если Layout уже существует и текст есть
-      if (consoleTextView.getLayout() != null) { // ДОБАВЛЕНА ПРОВЕРКА НА NULL
+      if (consoleTextView.getLayout() != null) {
         final int scrollAmount = consoleTextView.getLayout().getLineTop(
             consoleTextView.getLineCount()) - consoleTextView.getHeight();
         if (scrollAmount > 0) {
@@ -605,7 +606,7 @@ public class MainActivity extends AppCompatActivity {
             OutputStream out = new FileOutputStream(destination)) {
           byte[] buffer = new byte[4096];
           int length;
-          while ((length = in.read(buffer)) > -1) { // Изменено с > 0 на > -1 для корректной обработки последнего чтения
+          while ((length = in.read(buffer)) != -1) {
             out.write(buffer, 0, length);
           }
         }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">YouTube GUI</string>
+    <string name="app_name">YtGui - качает YouTube</string>
 
     <string name="main_activity_initial_text">Добро пожаловать в yt-dlp GUI! 🥳\n</string>
     <string name="next_button_text">Далее</string>
-    <string name="environment_download_start">Качаем yt-dlp [%1$s]... ~%2$dМб</string>
+    <string name="environment_download_start">Качаем ytgui-env [%1$s]... ~%2$dМб</string>
     <string name="environment_download_progress">Прогресс скачивания: %1$d%%</string>
     <string name="environment_unzip_start">Распаковка ytgui-env...</string>
     <string name="environment_unzip_progress">Прогресс распаковки: %1$d%%</string>
