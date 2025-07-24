@@ -45,7 +45,7 @@ jobs:
         
         # Перемещаем сгенерированные файлы из app/build/docs/javadoc в /docs
         cp -R app/build/docs/javadoc/* docs/
-      working-directory: ${{ github.workspace }} # Убедимся, что команда выполняется в корне репозитория
+        working-directory: ${{ github.workspace }} # Убедимся, что команда выполняется в корне репозитория
 
     - name: Upload Javadoc to artifacts (Optional: for debugging)
       uses: actions/upload-artifact@v4
