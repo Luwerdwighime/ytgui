@@ -1,9 +1,11 @@
-name: Build APK
+name: Build APK and Generate Javadoc
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,32 +25,49 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
 
-# Обычная сборка
     - name: Build Release APK
       run: ./gradlew clean assembleRelease
-
-# Сборка с отладочной информацией
-#    - name: Clean Gradle cache
-#      run: ./gradlew clean
-#    - name: Build with Gradle and Stacktrace
-#      run: ./gradlew build --warning-mode all --stacktrace --info --debug assembleDebug
-
-#    - name: Upload build reports
-#      if: failure()  # Загружаем отчёты только при сбое
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: build-reports
-#        path: app/build/reports
-
-#    - name: Upload APK
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: ytgui
-#        path: app/build/outputs/apk/debug/app-debug.apk
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: ytgui
         path: app/build/outputs/apk/**/**/*.apk
+
+    # --- Новый шаг: Генерация Javadoc ---
+    - name: Generate Javadoc
+      run: |
+        # Создаем директорию для docs, если ее нет
+        mkdir -p docs
+        
+        # Генерируем Javadoc.
+        # -d docs: Выходная директория для документации.
+        # $(find . -name "*.java"): Находим все .java файлы в текущей директории.
+        # --source-path app/src/main/java: Указываем корневую директорию исходников.
+        # --subpackages org.nazarik.ytgui: Указываем, какие пакеты документировать.
+        # -classpath "$(find ~/.gradle -name "*.jar" | tr '\n' ':')"
+        # ^-- Это сложный момент, т.к. Javadoc нужен classpath для всех зависимостей.
+        #    Лучший способ - использовать задачу Gradle для Javadoc, но это требует настройки Gradle.
+        #    Простой вариант:
+        
+        ./gradlew javadoc
+        
+        # Перемещаем сгенерированные файлы из app/build/docs/javadoc в /docs
+        cp -R app/build/docs/javadoc/* docs/
+      working-directory: ${{ github.workspace }} # Убедимся, что команда выполняется в корне репозитория
+
+    - name: Upload Javadoc to artifacts (Optional: for debugging)
+      uses: actions/upload-artifact@v4
+      with:
+        name: javadoc-docs
+        path: docs
+
+    # --- Новый шаг: Настройка GitHub Pages ---
+    - name: Deploy Javadoc to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main' # Публикуем только из основной ветки
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs # Папка, которую нужно опубликовать
+        force_orphan: true # Используйте, если хотите очищать ветку gh-pages перед каждой публикацией
 

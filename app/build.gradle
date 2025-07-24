@@ -47,6 +47,12 @@ android {
             signingConfig signingConfigs.debug // Теперь 'debug' будет найден
         }
     }
+
+    tasks.withType(Javadoc).configureEach {
+        options.encoding = "UTF-8"
+        options.memberLevel = JavadocMemberLevel.PRIVATE // Или JavadocMemberLevel.PUBLIC, PROTECTED, PACKAGE
+        options.addStringOption("Xdoclint:none", "-quiet") // Отключает некоторые предупреждения
+    }
 }
 
 dependencies {

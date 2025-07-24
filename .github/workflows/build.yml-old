@@ -1,0 +1,54 @@
+name: Build APK
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: 8.10
+    - name: Generate Gradle Wrapper
+      run: gradle wrapper --gradle-version 8.10
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew
+
+# Обычная сборка
+    - name: Build Release APK
+      run: ./gradlew clean assembleRelease
+
+# Сборка с отладочной информацией
+#    - name: Clean Gradle cache
+#      run: ./gradlew clean
+#    - name: Build with Gradle and Stacktrace
+#      run: ./gradlew build --warning-mode all --stacktrace --info --debug assembleDebug
+
+#    - name: Upload build reports
+#      if: failure()  # Загружаем отчёты только при сбое
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: build-reports
+#        path: app/build/reports
+
+#    - name: Upload APK
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: ytgui
+#        path: app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytgui
+        path: app/build/outputs/apk/**/**/*.apk
+
