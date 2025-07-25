@@ -38,9 +38,6 @@ project(':app').afterEvaluate { appProject ->
 
         // Целевая директория для Javadoc в корневом проекте
         destinationDir = file("${project.buildDir}/docs/javadoc")
-
-        // Добавляем зависимость, чтобы Javadoc генерировался после сборки 'app'
-        // Используем 'assembleRelease' для более полной сборки, которая включает все зависимости
-        dependsOn appProject.tasks.getByName("assembleRelease")
+        dependsOn appProject.tasks.assembleRelease
     }
 }
