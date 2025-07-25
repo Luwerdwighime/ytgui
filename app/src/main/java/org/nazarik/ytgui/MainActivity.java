@@ -462,6 +462,18 @@ public class MainActivity extends AppCompatActivity {
   }
 
   /**
+   * Обрабатывает случай, когда окружение Python повреждено или недействительно.
+   * Отображает сообщение об ошибке пользователю и отключает кнопку "Далее".
+   */
+  private void handleCorruptedEnvironment() {
+    runOnUiThread(() -> {
+      Toast.makeText(this, R.string.environment_corrupted_toast, Toast.LENGTH_LONG).show();
+      nextButton.setEnabled(false); // Отключаем кнопку, если окружение повреждено
+      appendLog(getString(R.string.environment_corrupted, ENV_VERSION));
+    });
+  }
+
+  /**
    * Проверяет, установлено ли окружение yt-dlp и является ли исполняемый файл Python действительным.
    *
    * @param pythonExecutable Файл исполняемого файла Python.
@@ -479,8 +491,7 @@ public class MainActivity extends AppCompatActivity {
    */
   private boolean isPythonEnvironmentValid(File pythonExecutable) {
     if (!pythonExecutable.exists() || !pythonExecutable.isFile() || !pythonExecutable.canExecute()) {
-      appendLog(getString(R.string.environment_corrupted, ENV_VERSION));
-      runOnUiThread(() -> Toast.makeText(this, R.string.environment_corrupted_toast, Toast.LENGTH_LONG).show());
+      // Это условие теперь вызывает handleCorruptedEnvironment()
       return false;
     }
     return true;
@@ -617,7 +628,6 @@ public class MainActivity extends AppCompatActivity {
       }
     }
   }
-
 
   /**
    * Переходит на DownloadActivity и завершает текущую Activity.
@@ -830,5 +840,4 @@ public class MainActivity extends AppCompatActivity {
     executorService.shutdownNow(); // Завершаем потоки при уничтожении Activity
   }
 }
-
 
