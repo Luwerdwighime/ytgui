@@ -18,32 +18,29 @@ allprojects {
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.JavadocMemberLevel
 
-// Задача Javadoc на уровне корневого проекта
-task javadoc(type: Javadoc) {
-    // Получаем проект 'app'
-    def appProject = project(':app')
+project(':app').afterEvaluate { appProject ->
+    task javadoc(type: Javadoc) {
+        // Указываем исходные файлы из модуля 'app'
+        source = appProject.android.sourceSets.main.java.srcDirs
 
-    // Указываем исходные файлы из модуля 'app'
-    source = appProject.android.sourceSets.main.java.srcDirs
+        // Собираем classpath из зависимостей модуля 'app'
+        classpath += appProject.files(appProject.android.bootClasspath)
+        classpath += appProject.files(appProject.project.files(appProject.android.getBootClasspath()).filter { it.exists() })
+        classpath += appProject.configurations.getByName('implementation')
+        classpath += appProject.configurations.getByName('debugImplementation')
+        classpath += appProject.configurations.getByName('testImplementation')
+        classpath += appProject.configurations.getByName('androidTestImplementation')
 
-    // Собираем classpath из зависимостей модуля 'app'
-    classpath += appProject.files(appProject.android.bootClasspath)
-    classpath += appProject.files(appProject.project.files(appProject.android.getBootClasspath()).filter { it.exists() })
-    classpath += appProject.configurations.getByName('implementation')
-    classpath += appProject.configurations.getByName('debugImplementation')
-    classpath += appProject.configurations.getByName('testImplementation')
-    classpath += appProject.configurations.getByName('androidTestImplementation')
+        // Настройки Javadoc
+        options.encoding = "UTF-8"
+        options.memberLevel = JavadocMemberLevel.PRIVATE
+        options.addStringOption("Xdoclint:none", "-quiet")
 
-    // Настройки Javadoc
-    options.encoding = "UTF-8"
-    options.memberLevel = JavadocMemberLevel.PRIVATE // Или PUBLIC, PROTECTED
-    options.addStringOption("Xdoclint:none", "-quiet")
+        // Целевая директория для Javadoc в корневом проекте
+        destinationDir = file("${project.buildDir}/docs/javadoc")
 
-    // Целевая директория для Javadoc в корневом проекте
-    destinationDir = file("${project.buildDir}/docs/javadoc")
-
-    // Добавляем зависимость, чтобы Javadoc генерировался после сборки 'app'
-    // Используем 'assembleRelease' для более полной сборки, которая включает все зависимости
-    dependsOn appProject.tasks.getByName("assembleRelease")
+        // Добавляем зависимость, чтобы Javadoc генерировался после сборки 'app'
+        // Используем 'assembleRelease' для более полной сборки, которая включает все зависимости
+        dependsOn appProject.tasks.getByName("assembleRelease")
+    }
 }
-
