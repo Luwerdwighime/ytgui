@@ -50,8 +50,21 @@ android {
 
     tasks.withType(Javadoc).configureEach {
         options.encoding = "UTF-8"
-        options.memberLevel = JavadocMemberLevel.PRIVATE // Или JavadocMemberLevel.PUBLIC, PROTECTED, PACKAGE
-        options.addStringOption("Xdoclint:none", "-quiet") // Отключает некоторые предупреждения
+        options.memberLevel = JavadocMemberLevel.PRIVATE
+        options.addStringOption("Xdoclint:none", "-quiet")
+
+        source = android.sourceSets.main.java.srcDirs
+        classpath += files(android.bootClasspath)
+        classpath += files(project.files(android.getBootClasspath()).filter { it.exists() })
+        classpath += configurations.debugImplementation
+        classpath += configurations.testImplementation
+        classpath += configurations.androidTestImplementation
+
+        // Можно также попробовать более общий подход, если предыдущий не сработает:
+        // classpath += configurations.getByName("implementation").files
+        // classpath += project.files(android.libraryVariants.all.collectMany { it.javaCompileProvider.get().classpath.files })
+
+        destinationDir = file("${buildDir}/docs/javadoc/")
     }
 }
 
