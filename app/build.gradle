@@ -2,6 +2,7 @@
 
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.JavadocMemberLevel
+// import org.gradle.external.javadoc.CoreJavadocOptions // Может потребоваться для addStringOption, если не работает
 
 plugins {
     id 'com.android.application'
@@ -43,33 +44,39 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release // Теперь 'release' будет найден
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            signingConfig signingConfigs.debug // Теперь 'debug' будет найден
+            signingConfig signingConfigs.debug
         }
     }
+}
 
-    tasks.withType(Javadoc).configureEach {
-        options.encoding = "UTF-8"
-        options.memberLevel = JavadocMemberLevel.PRIVATE
-        options.addStringOption("Xdoclint:none", "-quiet")
+task generateJavadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += files(android.bootClasspath)
+    classpath += files(project.files(android.getBootClasspath()).filter { it.exists() })
+    classpath += configurations.implementation // Используем implementation, так как это основные зависимости
+    classpath += configurations.debugImplementation
+    classpath += configurations.testImplementation
+    classpath += configurations.androidTestImplementation
 
-        source = android.sourceSets.main.java.srcDirs
-        classpath += files(android.bootClasspath)
-        classpath += files(project.files(android.getBootClasspath()).filter { it.exists() })
-        classpath += configurations.debugImplementation
-        classpath += configurations.testImplementation
-        classpath += configurations.androidTestImplementation
+    // Можно также попробовать более общий подход, если предыдущий не сработает:
+    // classpath += configurations.getByName("implementation").files
+    // classpath += project.files(android.libraryVariants.all.collectMany { it.javaCompileProvider.get().classpath.files })
 
-        // Можно также попробовать более общий подход, если предыдущий не сработает:
-        // classpath += configurations.getByName("implementation").files
-        // classpath += project.files(android.libraryVariants.all.collectMany { it.javaCompileProvider.get().classpath.files })
 
-        destinationDir = file("${buildDir}/docs/javadoc/")
-    }
+    options.encoding = "UTF-8"
+    options.memberLevel = JavadocMemberLevel.PRIVATE
+    options.addStringOption("Xdoclint:none", "-quiet")
+
+    destinationDir = file("${buildDir}/docs/javadoc/")
+
+    // Добавляем зависимости для этой задачи (чтобы она выполнялась после сборки)
+    // dependsOn "assembleDebug"
+    dependsOn "assembleRelease"
 }
 
 dependencies {
