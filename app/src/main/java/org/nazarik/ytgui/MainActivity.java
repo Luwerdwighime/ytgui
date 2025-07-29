@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "YtguiApp";
     private static final int PERMISSION_REQUEST_CODE = 1;
     private static final String DEMON_NAME = "ytguid";
-    private static final String DEMON_URL = "http://127.0.0.1:27523/hello";
+    private static final String DEMON_PORT = "27523";
+    private static final String DEMON_URL = "http://127.0.0.1:" + DEMON_PORT + "/hello";
 
     private WebView webView;
     private Process demonProcess;
@@ -63,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setAllowUniversalAccessFromFileURLs(true);
         webSettings.setAllowFileAccessFromFileURLs(true);
 
-        // Отключаем полосы прокрутки и скрываем адресную строку (она по умолчанию не видна)
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(true);
 
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 Log.e(TAG, "WebView error: " + errorCode + " - " + description + " at " + failingUrl);
-                Toast.makeText(MainActivity.this, "Ошибка загрузки веб-страницы: " + description, Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Ошибка загрузки веб-страницы: " + description + ". Убедитесь, что демон запущен.", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
      * Запускает последовательность операций после получения разрешений.
      */
     private void checkPermissionsAndStart() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // Проверяем, нужна ли динамическая проверка
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "Запрос разрешения на запись в хранилище.");
@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
                 startApplicationFlow();
             }
         } else {
-            // Для Android < M (API 23) разрешения даются при установке
             Log.d(TAG, "Версия Android < M, разрешения не требуются для динамического запроса.");
             startApplicationFlow();
         }
@@ -116,11 +115,11 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "Разрешение предоставлено!");
+                Log.d(TAG, "Разрешение предоставлено! 😊");
                 Toast.makeText(this, getString(R.string.permission_granted_message), Toast.LENGTH_SHORT).show();
                 startApplicationFlow();
             } else {
-                Log.w(TAG, "Разрешение отклонено!");
+                Log.w(TAG, "Разрешение отклонено! 😟");
                 showPermissionDeniedDialog();
             }
         }
@@ -148,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Log.d(TAG, "Начинаем копирование ресурсов демона.");
                 copyAssetsToInternalStorage("ytguid");
-                copyAssetsToInternalStorage("www");
                 Log.d(TAG, "Ресурсы демона скопированы. Запускаем демона.");
                 startDemon();
                 Log.d(TAG, "Демон запущен. Загружаем WebView.");
@@ -243,24 +241,23 @@ public class MainActivity extends AppCompatActivity {
             throw new IOException("Исполняемый файл демона не найден: " + demonFile.getAbsolutePath());
         }
 
-        // Устанавливаем права на исполнение
-        if (!demonFile.canExecute()) {
-            if (!demonFile.setExecutable(true, false)) { // true = owner, false = everyone else
-                Log.w(TAG, "Не удалось установить права на исполнение для " + demonFile.getAbsolutePath());
-            } else {
-                Log.d(TAG, "Установлены права на исполнение для " + demonFile.getAbsolutePath());
-            }
+        // Устанавливаем права на исполнение для всех, если они еще не установлены
+        // (perms for owner, perms for group, perms for others)
+        // setExecutable(true, false) - для владельца, setExecutable(true, true) - для всех
+        if (!demonFile.canExecute() && !demonFile.setExecutable(true, true)) {
+            Log.w(TAG, "Не удалось установить права на исполнение для " + demonFile.getAbsolutePath() + ". Проверьте разрешения.");
+        } else {
+            Log.d(TAG, "Установлены права на исполнение для " + demonFile.getAbsolutePath());
         }
 
-        // Путь к исполняемому файлу демона
         String demonPath = demonFile.getAbsolutePath();
 
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(demonPath);
-            // Устанавливаем рабочую директорию для демона
+            // Устанавливаем рабочую директорию для демона, это важно для поиска относительных путей
             processBuilder.directory(getFilesDir());
             // Перенаправляем stdout и stderr демона в Logcat для отладки
-            processBuilder.redirectErrorStream(true); // Объединяет stdout и stderr
+            processBuilder.redirectErrorStream(true);
 
             Log.d(TAG, "Запуск демона: " + demonPath + " из " + getFilesDir().getAbsolutePath());
             demonProcess = processBuilder.start();
