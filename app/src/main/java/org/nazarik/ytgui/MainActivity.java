@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Log.d(TAG, "Начинаем копирование ресурсов демона.");
                 copyAssetsToInternalStorage("ytguid");
+                copyAssetsToInternalStorage("www");
                 Log.d(TAG, "Ресурсы демона скопированы. Запускаем демона.");
                 startDemon();
                 Log.d(TAG, "Демон запущен. Загружаем WebView.");
