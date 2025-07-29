@@ -1,4 +1,7 @@
-name: Build APK and Generate Javadoc
+# @file .github/workflows/build.yml
+# @brief GitHub Action: сборка APK и зависимостей C++ (boost + crown)
+
+name: Build APK and Generate Docs
 
 on:
   push:
@@ -11,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
+    # JDK и Gradle
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -33,31 +38,4 @@ jobs:
       with:
         name: ytgui
         path: app/build/outputs/apk/**/**/*.apk
-
-    # --- Новый шаг: Генерация Javadoc ---
-    - name: Generate Javadoc
-      run: |
-        # Создаем директорию для docs, если ее нет
-        mkdir -p docs
-        
-        # Генерируем Javadoc с помощью Gradle
-        ./gradlew javadoc
-        
-        # Перемещаем сгенерированные файлы из app/build/docs/javadoc в /docs
-        cp -R app/build/docs/javadoc/* docs/
-
-    - name: Upload Javadoc to artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: javadoc-docs
-        path: docs
-
-    # --- Новый шаг: Настройка GitHub Pages ---
-    - name: Deploy Javadoc to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      if: github.ref == 'refs/heads/main'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs # Папка, которую нужно опубликовать
-        force_orphan: true # Используйте, если хотите очищать ветку gh-pages перед каждой публикацией
 

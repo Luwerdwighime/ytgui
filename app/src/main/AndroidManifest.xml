@@ -1,42 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  package="org.nazarik.ytgui">
+    package="org.nazarik.ytgui">
 
-  <!-- ✅ Доступ к сети -->
-  <uses-permission android:name="android.permission.INTERNET" />
-  <!-- ✅ Доступ к памяти -->
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-    android:maxSdkVersion="28" />
-  <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-
-  <application
-    android:allowBackup="true"
-    android:dataExtractionRules="@xml/data_extraction_rules"
-    android:fullBackupContent="@xml/backup_rules"
-    android:label="@string/app_name"
-    android:icon="@drawable/ic_launcher_diskette"
-    android:roundIcon="@drawable/ic_launcher_diskette"
-    android:theme="@style/Theme.YtGUI"
-    android:requestLegacyExternalStorage="true"
-    tools:targetApi="31">
-
-    <activity
-      android:name=".DownloadActivity"
-      android:exported="false"
-      android:screenOrientation="portrait" />
-
-    <activity
-      android:name=".MainActivity"
-      android:exported="true"
-      android:screenOrientation="portrait">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-    </activity>
-
-  </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_floppy_disk"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/ic_floppy_disk"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Ytgui"> <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>
 
