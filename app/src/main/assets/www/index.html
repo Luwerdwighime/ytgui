@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>UI для WebView</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f3f3f3;
+      text-align: center;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: none;
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 15px;
+      width: 90%;
+      max-width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .panel label {
+      font-size: 16px;
+      margin: 5px 0;
+      display: block;
+    }
+
+    .panel button {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .note {
+      font-style: italic;
+      font-size: 14px;
+      margin-top: 5px;
+      color: #444;
+    }
+
+    .bigBtn {
+      width: 80%;
+      margin: 10px auto;
+      padding: 15px;
+      font-size: 18px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: block;
+    }
+
+    .bigBtn:hover {
+      background-color: #45a049;
+    }
+
+    .gear {
+      width: 40px;
+      margin: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="panel1">
+    <div class="panel">
+      <label><input type="checkbox" id="chk1Video"> bestvideo</label><br>
+      <label><input type="checkbox" id="chk1Audio"> bestaudio</label><br>
+      <p class="note">*Если выбрать обе галочки, то возможна скачка двух файлов</p>
+      <button onclick="closePanel('panel1')">OK</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="panel2">
+    <div class="panel">
+      <label><input type="checkbox" id="chk2Audio"> bestaudio</label><br>
+      <button onclick="closePanel('panel2')">OK</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="panel3">
+    <div class="panel">
+      <label><input type="checkbox" id="chk3Video"> bestvideo</label><br>
+      <label><input type="checkbox" id="chk3Audio"> bestaudio</label><br>
+      <p class="note">*Если выбрать обе галочки, то возможна скачка двух файлов</p>
+      <button onclick="closePanel('panel3')">OK</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="panel4">
+    <div class="panel">
+      <label><input type="checkbox" id="chk4Audio"> bestaudio</label><br>
+      <button onclick="closePanel('panel4')">OK</button>
+    </div>
+  </div>
+
+  <div style="padding: 20px;">
+    <input type="text" id="pasteInput" placeholder="Вставьте URL..." style="width: 70%; padding: 10px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc;">
+    <button onclick="pasteFromClipboard()" style="padding: 10px 15px; font-size: 18px; margin-left: 10px; border-radius: 6px; background-color: #2196F3; color: white; border: none; cursor: pointer;">📋</button>
+  </div>
+
+  <table border="0" style="width: 100%; padding: 10px;">
+    <tr>
+      <td><button class="bigBtn" onclick="handleButton(1)">Скачать видео</button></td>
+      <td><button class="gear" onclick="openPanel('panel1')">⚙</button></td>
+    </tr>
+    <tr>
+      <td><button class="bigBtn" onclick="handleButton(2)">Скачать аудио</button></td>
+      <td><button class="gear" onclick="openPanel('panel2')">⚙</button></td>
+    </tr>
+    <tr>
+      <td><button class="bigBtn" onclick="handleButton(3)">Скачать видеоплейлист</button></td>
+      <td><button class="gear" onclick="openPanel('panel3')">⚙</button></td>
+    </tr>
+    <tr>
+      <td><button class="bigBtn" onclick="handleButton(4)">Скачать аудиоплейлист</button></td>
+      <td><button class="gear" onclick="openPanel('panel4')">⚙</button></td>
+    </tr>
+  </table>
+
+  <script>
+    async function pasteFromClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('pasteInput').value = text;
+      } catch (err) {
+        alert("Не удалось получить данные из буфера обмена: " + err);
+      }
+    }
+
+    function openPanel(id) {
+      document.getElementById(id).style.display = 'block';
+    }
+
+    function closePanel(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function handleButton(name) {
+      let bestvideo = false;
+      let bestaudio = false;
+      switch (name) {
+        case 1:
+          bestvideo = document.getElementById('chk1Video').checked;
+          bestaudio = document.getElementById('chk1Audio').checked;
+          break;
+        case 2:
+          bestaudio = document.getElementById('chk2Audio').checked;
+          break;
+        case 3:
+          bestvideo = document.getElementById('chk3Video').checked;
+          bestaudio = document.getElementById('chk3Audio').checked;
+          break;
+        case 4:
+          bestaudio = document.getElementById('chk4Audio').checked;
+          break;
+      }
+
+      alert(`Кнопка ${name}, bestvideo=${!!bestvideo}, bestaudio=${!!bestaudio}`);
+    }
+  </script>
+</body>
+</html>
+

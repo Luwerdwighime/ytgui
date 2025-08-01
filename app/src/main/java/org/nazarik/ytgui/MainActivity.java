@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Начинаем копирование ресурсов демона.");
                 copyAssetsToInternalStorage("ytguid");
                 copyAssetsToInternalStorage("www");
+                copyAssetsToInternalStorage("ytgui-env");
                 Log.d(TAG, "Ресурсы демона скопированы. Запускаем демона.");
                 startDemon();
                 Log.d(TAG, "Демон запущен. Загружаем WebView.");
